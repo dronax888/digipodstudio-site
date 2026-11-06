@@ -399,12 +399,13 @@ def home(articles):
 
 <section class="marquee" aria-label="More designs">{marquee}</section>
 
-<section class="sec" aria-labelledby="best-h"><div class="wrap">
+<section class="sec" aria-labelledby="best-h"><div class="wrap wrap-wide">
 <div class="sec-head" data-reveal><div><h2 id="best-h">Best sellers</h2><p class="muted">Ranked by what families ordered most this year.</p></div>
 <div class="car-nav"><button class="car-btn" type="button" data-car-prev aria-label="Previous best sellers"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><button class="car-btn" type="button" data-car-next aria-label="Next best sellers"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div></div>
+</div>
 <ol class="ranked car-track" data-carousel tabindex="0" aria-label="Best sellers">{ranked}</ol>
-<p style="margin-top:22px"><a class="textlink" href="@/shop/">See every template</a></p>
-</div></section>
+<div class="wrap wrap-wide"><p style="margin-top:22px"><a class="textlink" href="@/shop/">See every template</a></p></div>
+</section>
 
 <section class="sec band" aria-labelledby="occ-h"><div class="wrap">
 <div class="sec-head" data-reveal><h2 id="occ-h">Shop by celebration</h2></div>

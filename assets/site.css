@@ -434,7 +434,7 @@ body[data-page=home] .top:not(.scrolled) .nav a:hover,body[data-page=home] .top:
 .car-btn{width:48px;height:48px;border-radius:50%;border:1.5px solid var(--velvet);background:transparent;display:grid;place-items:center;cursor:pointer;color:var(--velvet);transition:background .2s,color .2s}
 .car-btn:hover{background:var(--velvet);color:var(--pearl)}
 .car-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2}
-.car-track{display:grid!important;grid-auto-flow:column;grid-auto-columns:clamp(240px,23.5%,300px);grid-template-columns:none!important;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;padding:16px 4px 8px;margin:-16px -4px 0}
+.car-track{display:grid!important;grid-auto-flow:column;grid-auto-columns:clamp(240px,19vw,330px);grid-template-columns:none!important;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:var(--gut);scroll-behavior:smooth;scrollbar-width:none;padding:16px var(--gut) 8px;margin:-16px 0 0}
 .car-track::-webkit-scrollbar{display:none}
 .car-track>li{scroll-snap-align:start}
 .car-track .card a.cover{transition:transform .45s cubic-bezier(.2,.7,.2,1),box-shadow .45s}
@@ -456,4 +456,5 @@ body[data-page=home] .top:not(.scrolled) .nav a:hover,body[data-page=home] .top:
   .js [data-reveal]{opacity:1;transform:none}
   .slide.is-on img{animation:none}
 }
-.car-track{margin-right:calc(50% - 50vw);padding-right:calc(50vw - 50%)}
+
+.wrap-wide{max-width:none}
