@@ -293,7 +293,7 @@ def set_html(s):
     imgs = ''.join(f'<a href="@/templates/{p["slug"]}/" tabindex="-1" aria-hidden="true"><img loading="lazy" src="{p["img"]}" alt=""></a>' for p in s['pieces'][:3])
     rows = ''.join(f'<li><a href="@/templates/{p["slug"]}/">{e(p["type_name"].rstrip("s") if p["type_name"].endswith("s") else p["type_name"])}</a><span>{money(p["price"])}</span></li>' for p in s['pieces'])
     total = sum(p['price'] for p in s['pieces'])
-    return (f'<article class="set"><div class="set-imgs">{imgs}</div><h3><span class="dot" style="background:{c["hex"]}"></span>{e(c["label"])}</h3>'
+    return (f'<article class="set" data-reveal><div class="set-imgs">{imgs}</div><h3><span class="dot" style="background:{c["hex"]}"></span>{e(c["label"])}</h3>'
             f'<ul>{rows}</ul><p class="muted" style="font-size:.92rem;margin-bottom:12px">{len(s["pieces"])} pieces, {money(total)} together</p>'
             f'<a class="textlink" href="@/colors/{s["colour"]}/">All {e(c["label"].lower())} designs</a></article>')
 
@@ -351,59 +351,77 @@ def render_article_body(md_text):
 
 # ---------------------------------------------------------------- pages
 def home(articles):
-    best = sorted([p for p in P if p['best']], key=lambda p: p['best'])[:8]
-    quince = sorted([p for p in P if p['occasion'] == 'quinceanera-sweet-16'], key=rank)
-    mosaic = []
-    seen_t = Counter()
-    for p in quince:
-        if len(mosaic) < 6 and seen_t[p['type']] < 2:
-            mosaic.append(p)
-            seen_t[p['type']] += 1
+    best = sorted([p for p in P if p['best']], key=lambda p: p['best'])[:12]
     sw = ''.join(f'<li><button class="swatch" type="button" data-colour="{c}" aria-pressed="false" style="--c:{COL[c]["hex"]}"><i></i>{e(COL[c]["label"])}</button></li>'
                  for c in ['pink', 'champagne', 'blue', 'red', 'rose-gold', 'purple', 'green', 'black'])
-    mos = ''.join(f'<a href="@/templates/{p["slug"]}/"><img src="{p["img_lg"]}" alt="{e(p["name"])}"{" fetchpriority=high" if i < 2 else ""}></a>' for i, p in enumerate(mosaic))
-    ranked = ''.join(f'<li><span class="rank" aria-hidden="true">{i + 1}</span>{card(p, "div", lazy=False)}</li>' for i, p in enumerate(best))
+    # cinematic "venue screen": the best sellers play like a slideshow
+    playlist = best[:6]
+    slides = ''.join(f'<a class="slide{" is-on" if i == 0 else ""}" href="@/templates/{p["slug"]}/" data-name="{e(p["name"])}" data-price="{money(p["price"])}" data-type="{e(p["type_name"])}"'
+                     f'{"" if i == 0 else " tabindex=-1"}><img src="{p["img_lg"]}" alt="{e(p["name"])}"{" fetchpriority=high" if i == 0 else " loading=lazy"}></a>'
+                     for i, p in enumerate(playlist))
+    bars = ''.join(f'<button type="button" class="bar{" is-on" if i == 0 else ""}" aria-label="Show design {i + 1}"><i></i></button>' for i in range(len(playlist)))
+    # two endless rows of designs
+    pool = sorted(P, key=rank)
+    row1 = [p for p in pool if p['occasion'] == 'quinceanera-sweet-16'][:16]
+    row2 = [p for p in pool if p['occasion'] != 'quinceanera-sweet-16'][:8] + [p for p in pool if p['occasion'] == 'quinceanera-sweet-16'][16:24]
+
+    def mq(items, rev=False):
+        cells = ''.join(f'<a class="mq-item" href="@/templates/{p["slug"]}/"><img loading="lazy" src="{p["img"]}" srcset="{p["img"]} 340w, {p["img_lg"]} 794w" sizes="280px" alt="{e(p["name"])}" width="340" height="270"></a>' for p in items)
+        dup = cells.replace('class="mq-item"', 'class="mq-item" tabindex="-1" aria-hidden="true"')
+        return f'<div class="mq-row{" mq-rev" if rev else ""}"><div class="mq-track">{cells}{dup}</div></div>'
+    marquee = mq(row1) + mq(row2, True)
+    ranked = ''.join(f'<li class="slide-card"><span class="rank" aria-hidden="true">{i + 1}</span>{card(p, "div", lazy=False)}</li>' for i, p in enumerate(best[:12]))
     occ_tiles = ''
     for o in OCC_ORDER:
         ps = sorted([p for p in P if p['occasion'] == o], key=rank)
-        occ_tiles += (f'<a class="occ" href="@/{o}/"><img loading="lazy" src="{ps[0]["img_lg"]}" alt=""><div><h3>{OCC_NAME[o]}</h3>'
+        occ_tiles += (f'<a class="occ" data-reveal href="@/{o}/"><img loading="lazy" src="{ps[0]["img_lg"]}" alt=""><div><h3>{OCC_NAME[o]}</h3>'
                       f'<p>{OCCASION_COPY[o]["blurb"]}, {len(ps)} design{"s" if len(ps) != 1 else ""}</p></div></a>')
-    revs = ''.join(review_html(r) for r in REVIEWS[:6])
+    revs = ''.join(review_html(r) for r in REVIEWS[:10])
     posts = ''.join(post_card(a) for a in [a for a in articles if a['lang'] == 'en'][:3])
     body = f'''
-<section class="hero"><div class="wrap">
-<div>
+<section class="hero hero-cine"><div class="glow g1" aria-hidden="true"></div><div class="glow g2" aria-hidden="true"></div><div class="wrap">
+<div class="hero-copy">
 <h1>Invitations and slideshows for the day she turns <em>quince</em></h1>
 <p class="lede">Editable in Canva, in English or Spanish. Choose her colors, add your photos and share it with the whole family the same day.</p>
 <div class="ribbon" id="ribbon"><span class="ribbon-label" id="ribbon-l">What are her party colors?</span>
 <ul class="swatches" aria-labelledby="ribbon-l">{sw}</ul></div>
-<div class="hero-ctas"><a class="btn btn-primary" href="@/quinceanera-sweet-16/">Shop quinceañera</a><a class="btn btn-ghost" href="@/shop/">Browse all {len(P)} templates</a></div>
+<div class="hero-ctas"><a class="btn btn-primary" href="@/quinceanera-sweet-16/">Shop quinceañera</a><a class="btn btn-ghost btn-ghost-light" href="@/shop/">Browse all {len(P)} templates</a></div>
 <div class="trust"><span><span class="stars" aria-hidden="true">★★★★★</span> <b>{SHOP["rating"]}</b> from {SHOP["reviews"]} Etsy reviews</span><span><b>{SHOP["sales"]}+</b> orders</span><span><b>Star Seller</b> on Etsy</span></div>
 </div>
-<div class="mosaic" id="mosaic" aria-live="polite">{mos}</div>
+<figure class="screen" id="screen" aria-roledescription="carousel" aria-label="Best sellers playing on a venue screen">
+<div class="screen-frame"><div class="slides" id="slides" aria-live="off">{slides}</div>
+<div class="screen-ui"><div class="bars" id="bars">{bars}</div>
+<figcaption class="now"><span class="now-l" id="now-l">Now playing, best seller no. 1</span><a id="now-link" href="@/templates/{playlist[0]["slug"]}/">{e(playlist[0]["name"])}</a><span class="now-meta" id="now-meta">{e(playlist[0]["type_name"])}, {money(playlist[0]["price"])}</span></figcaption>
+<button class="screen-pause" id="screen-pause" type="button" aria-label="Pause slideshow"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-pause" d="M8 5h3v14H8zM13 5h3v14h-3z"/><path class="i-play" d="M8 5l11 7-11 7z"/></svg></button></div></div>
+<div class="stand" aria-hidden="true"></div>
+</figure>
 </div></section>
 
-<section class="sec" style="padding-top:clamp(24px,3vw,40px)" aria-labelledby="best-h"><div class="wrap">
-<div class="sec-head"><div><h2 id="best-h">Best sellers</h2><p class="muted">The designs families choose most, ranked.</p></div><a class="textlink" href="@/shop/">See every template</a></div>
-<ol class="ranked">{ranked}</ol>
+<section class="marquee" aria-label="More designs">{marquee}</section>
+
+<section class="sec" aria-labelledby="best-h"><div class="wrap">
+<div class="sec-head" data-reveal><div><h2 id="best-h">Best sellers</h2><p class="muted">Ranked by what families ordered most this year.</p></div>
+<div class="car-nav"><button class="car-btn" type="button" data-car-prev aria-label="Previous best sellers"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><button class="car-btn" type="button" data-car-next aria-label="Next best sellers"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div></div>
+<ol class="ranked car-track" data-carousel tabindex="0" aria-label="Best sellers">{ranked}</ol>
+<p style="margin-top:22px"><a class="textlink" href="@/shop/">See every template</a></p>
 </div></section>
 
 <section class="sec band" aria-labelledby="occ-h"><div class="wrap">
-<div class="sec-head"><h2 id="occ-h">Shop by celebration</h2></div>
+<div class="sec-head" data-reveal><h2 id="occ-h">Shop by celebration</h2></div>
 <div class="occasions">{occ_tiles}</div>
 </div></section>
 
 <section class="sec" aria-labelledby="sets-h"><div class="wrap">
-<div class="sec-head"><div><h2 id="sets-h">Keep one palette from save the date to slideshow</h2><p class="muted">Pieces that share the same colors, so every message your guests get looks like it belongs together.</p></div><a class="textlink" href="@/matching-sets/">All matching sets</a></div>
+<div class="sec-head" data-reveal><div><h2 id="sets-h">Keep one palette from save the date to slideshow</h2><p class="muted">Pieces that share the same colors, so every message your guests get looks like it belongs together.</p></div><a class="textlink" href="@/matching-sets/">All matching sets</a></div>
 <div class="sets">{''.join(set_html(s) for s in SETS[:3])}</div>
 </div></section>
 
 <section class="sec dark" aria-labelledby="how-h"><div class="wrap">
-<div class="sec-head"><h2 id="how-h" style="color:var(--pearl)">Ready the same day</h2><a class="textlink" href="@/how-it-works/">How it works in detail</a></div>
+<div class="sec-head" data-reveal><h2 id="how-h" style="color:var(--pearl)">Ready the same day</h2><a class="textlink" href="@/how-it-works/">How it works in detail</a></div>
 <ol class="steps">
-<li><h3>Order on Etsy</h3><p class="muted">Checkout is handled by Etsy, so your payment is protected. Your download is ready right away.</p></li>
-<li><h3>Open it in Canva</h3><p class="muted">Change names, dates, photos and music in your browser or the Canva app. No design skills needed.</p></li>
-<li><h3>Share or play it</h3><p class="muted">Send it by text or WhatsApp, publish your RSVP site, or download the MP4 for the venue screen.</p></li>
+<li data-reveal><h3>Order on Etsy</h3><p class="muted">Checkout is handled by Etsy, so your payment is protected. Your download is ready right away.</p></li>
+<li data-reveal><h3>Open it in Canva</h3><p class="muted">Change names, dates, photos and music in your browser or the Canva app. No design skills needed.</p></li>
+<li data-reveal><h3>Share or play it</h3><p class="muted">Send it by text or WhatsApp, publish your RSVP site, or download the MP4 for the venue screen.</p></li>
 </ol></div></section>
 
 <section class="sec" aria-labelledby="plan-h"><div class="wrap planner-teaser">
@@ -415,13 +433,13 @@ def home(articles):
 </form></div></section>
 
 <section class="sec band" aria-labelledby="rev-h"><div class="wrap">
-<div class="sec-head"><div><h2 id="rev-h">From families who celebrated with us</h2><p class="muted">Recent reviews from our Etsy shop.</p></div><a class="textlink" href="{ETSY_SHOP}#reviews" rel="noopener">Read all reviews on Etsy</a></div>
-<div class="reviews">{revs}</div>
+<div class="sec-head" data-reveal><div><h2 id="rev-h">From families who celebrated with us</h2><p class="muted">Recent reviews from our Etsy shop.</p></div><a class="textlink" href="{ETSY_SHOP}#reviews" rel="noopener">Read all reviews on Etsy</a></div>
+<div class="rev-rail"><div class="rev-track">{revs}{revs.replace('class="review"', 'class="review" aria-hidden="true"')}</div></div>
 </div></section>
 
 {signup_box()}
 <section class="sec" aria-labelledby="j-h"><div class="wrap">
-<div class="sec-head"><div><h2 id="j-h">Planning ideas from the journal</h2><p class="muted">Timelines, color palettes and step-by-step Canva guides.</p></div><a class="textlink" href="@/journal/">All articles</a></div>
+<div class="sec-head" data-reveal><div><h2 id="j-h">Planning ideas from the journal</h2><p class="muted">Timelines, color palettes and step-by-step Canva guides.</p></div><a class="textlink" href="@/journal/">All articles</a></div>
 <div class="posts">{posts}</div>
 </div></section>
 
@@ -450,7 +468,7 @@ def review_html(r):
 
 def post_card(a):
     img = a.get('image') or (pick_products(a['tags'][:1], 1) or [P[0]])[0]['img_lg']
-    return (f'<article class="post"><a class="cover" href="@/{a["path"]}" tabindex="-1" aria-hidden="true"><img loading="lazy" src="{img}" alt=""></a>'
+    return (f'<article class="post" data-reveal><a class="cover" href="@/{a["path"]}" tabindex="-1" aria-hidden="true"><img loading="lazy" src="{img}" alt=""></a>'
             f'<h3><a href="@/{a["path"]}">{e(a["title"])}</a></h3><p>{e(a["description"])}</p></article>')
 
 
@@ -706,7 +724,7 @@ def spanish_home(articles):
 {chips}</div></div></section>
 <section class="sec" style="padding-top:20px"><div class="wrap"><div class="sec-head"><div><h2>Las más vendidas</h2><p class="muted">Los diseños que más eligen las familias.</p></div><a class="textlink" href="@/shop/">Ver todas</a></div><ol class="ranked">{ranked}</ol></div></section>
 <section class="sec dark"><div class="wrap"><h2 style="color:var(--pearl)">Lista el mismo día</h2><ol class="steps">
-<li><h3>Compra en Etsy</h3><p class="muted">Etsy procesa el pago de forma segura y tu descarga está lista al instante.</p></li>
+<li data-reveal><h3>Compra en Etsy</h3><p class="muted">Etsy procesa el pago de forma segura y tu descarga está lista al instante.</p></li>
 <li><h3>Edita en Canva</h3><p class="muted">Cambia nombres, fechas, fotos y música desde la computadora o el celular.</p></li>
 <li><h3>Compártelo</h3><p class="muted">Envíalo por WhatsApp o mensaje, publica tu página de RSVP o descarga el MP4 para la pantalla del salón.</p></li></ol></div></section>
 {f'<section class="sec"><div class="wrap"><div class="sec-head"><h2>Del blog</h2><a class="textlink" href="@/es/blog/">Todos los artículos</a></div><div class="posts">{posts}</div></div></section>' if posts else ''}
