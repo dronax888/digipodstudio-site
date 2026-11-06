@@ -1,0 +1,1 @@
+{"name": "Digipod Studio", "short_name": "Digipod", "start_url": "/", "display": "browser", "background_color": "#FCF7F9", "theme_color": "#2B0B25", "icons": [{"src": "/assets/favicon.svg", "sizes": "any", "type": "image/svg+xml"}]}

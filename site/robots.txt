@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /party-list/
+
+Sitemap: https://digipodstudio.com/sitemap.xml
