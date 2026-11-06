@@ -16,6 +16,7 @@ from enrich import COLOURS, THEMES  # noqa: E402
 
 ROOTDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 import hashlib
+PRODUCTS_V = hashlib.md5(open(os.path.join(ROOTDIR, 'data', 'products.json'), 'rb').read()).hexdigest()[:10]
 ASSET_V = hashlib.md5(open(os.path.join(ROOTDIR, 'assets', 'site.css'), 'rb').read() + open(os.path.join(ROOTDIR, 'assets', 'site.js'), 'rb').read()).hexdigest()[:10]
 PREVIEW = '--preview' in sys.argv
 OUT = os.path.join(ROOTDIR, 'preview' if PREVIEW else 'site')
@@ -130,7 +131,7 @@ def page(path, title, desc, body, *, schema=None, og_image=None, lang='en', alte
     lang_link = ('<a class="lang" href="@/" hreflang="en" lang="en">English</a>' if es
                  else '<a class="lang" href="@/es/" hreflang="es" lang="es">Español</a>')
     doc = f'''<!doctype html>
-<html lang="{lang}" data-root="@/" data-ext="@"{' data-signup="' + e(json.dumps(SIGNUP)) + '"' if SIGNUP.get('action') else ''}>
+<html lang="{lang}" data-root="@/" data-ext="@" data-pv="{PRODUCTS_V}"{' data-signup="' + e(json.dumps(SIGNUP)) + '"' if SIGNUP.get('action') else ''}>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

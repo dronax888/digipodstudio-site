@@ -28,7 +28,7 @@
   var products = null, loading = null;
   function getProducts() {
     if (products) return Promise.resolve(products);
-    if (!loading) loading = fetch(ROOT + 'assets/products.json').then(function (r) { return r.json(); }).then(function (d) { products = d; return d; });
+    if (!loading) loading = fetch(ROOT + 'assets/products.json?v=' + (document.documentElement.getAttribute('data-pv') || '')).then(function (r) { return r.json(); }).then(function (d) { products = d; return d; });
     return loading;
   }
 
