@@ -233,14 +233,17 @@ ORG = {'@context': 'https://schema.org', '@type': 'Organization', 'name': BRAND,
 # ---------------------------------------------------------------- matching sets
 def build_sets():
     """For each colour family, the best-ranked quinceañera piece of each type that shares it."""
-    sets = []
+    sets, used = [], set()
     quince = [p for p in P if p['occasion'] == 'quinceanera-sweet-16']
-    for c in ['pink', 'champagne', 'blue', 'red', 'rose-gold', 'purple', 'green', 'black', 'fuchsia', 'white']:
+    for c in ['pink', 'blue', 'champagne', 'red', 'rose-gold', 'purple', 'green', 'black', 'fuchsia', 'white']:
         pieces = []
         for t in ['save-the-dates', 'website-invitations', 'video-invitations', 'slideshows']:
-            cand = sorted([p for p in quince if p['type'] == t and c in p['colours']], key=rank)
+            # prefer designs whose main color is this one, and never reuse a piece from another set
+            cand = sorted([p for p in quince if p['type'] == t and c in p['colours'] and p['id'] not in used],
+                          key=lambda p: (p['colours'][0] != c, len(p['colours']), rank(p)))
             if cand:
                 pieces.append(cand[0])
+                used.add(cand[0]['id'])
         if len(pieces) >= 3:
             sets.append({'colour': c, 'pieces': pieces})
     return sets
@@ -370,7 +373,7 @@ def home(articles):
 <section class="sec" aria-labelledby="plan-h"><div class="wrap planner-teaser">
 <div><h2 id="plan-h">When should each piece go out?</h2><p class="lede">Enter the party date. We work backwards to when to send the save the date and the invitation, when the RSVP closes and when to finish the slideshow, and you can add every step to your calendar.</p></div>
 <form class="datebox" id="planner-teaser">
-<div class="row"><div><label for="t-event">Celebration</label><select id="t-event"><option value="quince">Quinceañera or sweet 16</option><option value="wedding">Wedding</option><option value="birthday">Birthday</option><option value="mitzvah">Bat or bar mitzvah</option><option value="graduation">Graduation</option></select></div>
+<div class="row"><div><label for="t-event">Celebration</label><select id="t-event"><option value="quince">Quinceañera</option><option value="wedding">Wedding</option><option value="birthday">Birthday</option><option value="mitzvah">Bat or bar mitzvah</option><option value="graduation">Graduation</option></select></div>
 <div><label for="t-date">Party date</label><input id="t-date" type="date" required></div></div>
 <button class="btn btn-primary" type="submit">{ICON['cal']}Build my timeline</button>
 </form></div></section>
