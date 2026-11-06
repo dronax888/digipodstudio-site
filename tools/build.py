@@ -809,7 +809,7 @@ def simple_pages():
     page('contact/index.html', 'Contact Digipod Studio', 'Questions about a template or an order? Message Digipod Studio on Etsy or by email.',
          f'''{nav}<section class="page-head wrap"><h1>Contact us</h1><p class="lede">The fastest way to reach us about an order is an Etsy message, because we can see your purchase there.</p>
 <div class="hero-ctas" style="margin-top:20px"><a class="btn btn-primary" href="{SHOP["contact_url"]}" rel="noopener">Message us on Etsy</a></div></section>
-<section class="wrap prose prose-narrow"><p>For anything else, email <a href="mailto:{SHOP["email_quince"]}">{SHOP["email_quince"]}</a> for quinceañera and sweet 16 questions, or <a href="mailto:{SHOP["email_celebrations"]}">{SHOP["email_celebrations"]}</a> for weddings, birthdays and other celebrations.</p></section>''', schema=[bc])
+<section class="wrap prose prose-narrow"><p>For anything else, email us at <a href="mailto:{SHOP["email"]}">{SHOP["email"]}</a>.</p></section>''', schema=[bc])
 
     nav, bc = crumbs([('', 'Home'), (None, 'Privacy')])
     page('privacy/index.html', 'Privacy | Digipod Studio', 'How digipodstudio.com handles your information.',
@@ -818,7 +818,7 @@ def simple_pages():
 <p>If you sign up for our checklist and emails, we keep your email address, the celebration you chose and the party date (if you gave one) in a private Google Sheet that only Digipod Studio can see. We use it only to send you planning ideas and new designs, at most once a week. To unsubscribe or have your details deleted, reply to any email or write to the address below.</p>
 <p>Your party list is stored only in your own browser on your device. Sharing a list creates a link containing the template numbers you chose and nothing else.</p>
 <p>Product photos load from Etsy's image servers and fonts load from Google Fonts. Those services receive standard technical information such as your IP address when your browser requests them.</p>
-<p>Questions: <a href="mailto:{SHOP["email_quince"]}">{SHOP["email_quince"]}</a>. Last updated {TODAY:%B %-d, %Y}.</p></section>''', schema=[bc], priority='0.2')
+<p>Questions: <a href="mailto:{SHOP["email"]}">{SHOP["email"]}</a>. Last updated {TODAY:%B %-d, %Y}.</p></section>''', schema=[bc], priority='0.2')
 
     page('404.html', 'Page not found | Digipod Studio', 'This page does not exist.',
          '<section class="page-head wrap"><h1>We could not find that page</h1><p class="lede">The link may be old or mistyped. Search for a template or start from the shop.</p>'
