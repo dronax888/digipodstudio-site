@@ -11,7 +11,7 @@
   --rosa:#C80068; --rosa-dk:#9E0052; --mauve:#6B5566; --gilt:#B08A4F; --line:#E6D3DD;
   --display:"Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
   --sans:"Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --wrap:1240px; --gut:clamp(20px,4vw,48px);
+  --wrap:clamp(1240px,82vw,1680px); --gut:clamp(20px,4vw,48px);
   --r-img:14px; --r-panel:28px;
   --step--1:clamp(.84rem,.82rem + .1vw,.9rem);
   --step-0:clamp(1rem,.96rem + .2vw,1.09rem);
@@ -458,3 +458,8 @@ body[data-page=home] .top:not(.scrolled) .nav a:hover,body[data-page=home] .top:
 }
 
 .wrap-wide{max-width:none}
+@media (min-width:1900px){
+  :root{--step-4:clamp(2.6rem,1.9rem + 2.6vw,5.6rem);--step-3:clamp(2rem,1.6rem + 1.5vw,3.6rem)}
+  body{font-size:1.12rem}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+}
