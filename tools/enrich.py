@@ -76,6 +76,11 @@ def clean_title(t):
     t = t.replace(' l ', ' | ').replace(' I ', ' | ').replace('–', '|')
     parts = [p.strip(' ,') for p in re.split(r'\s*\|\s*', t) if p.strip()]
     name = parts[0] if parts else t
+    i = 1
+    TYPEWORD = re.compile(r'template|slideshow|invitation|save the date|montage|display|banner|sign|website', re.I)
+    while (len(name.split()) < 3 or not TYPEWORD.search(name)) and i < len(parts) and len(name.split()) < 9:  # e.g. "Quinceanera | Sweet 16 | Slideshow Template"
+        name = f'{name} {parts[i]}'
+        i += 1
     name = re.sub(r'\s+', ' ', name)
     if len(name) > 64 and ',' in name:
         m = re.search(r'(template|slideshow|invitation|save the date|montage|website|display|banner|sign|video)', name, re.I)
@@ -95,6 +100,8 @@ def main():
     reg = json.load(open(D('registry.json')))
     imgs = json.load(open(D('images.json')))
     best = json.load(open(D('bestsellers.json')))['listing_ids']
+    order = json.load(open(D('sales_rank.json')))['order'] if os.path.exists(D('sales_rank.json')) else []
+    sold = {lid: len(order) - i for i, lid in enumerate(order)}  # higher = sold more
     used = {}
     out = []
     for r in reg:
@@ -142,6 +149,7 @@ def main():
             'img': im.get('img', ''), 'img_lg': big_image(im.get('img', '')), 'alt': alt,
             'colours': colours, 'themes': themes, 'features': feats, 'slides': slides,
             'best': best.index(lid) + 1 if lid in best else None,
+            'sold': sold.get(lid, 0),
             'order': int(no.split('.')[-1]),
         })
     # Give products that share a generic name a descriptive one (colour + theme first)

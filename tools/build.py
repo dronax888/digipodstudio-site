@@ -39,8 +39,11 @@ e = html.escape
 
 
 def rank(p):
-    """Default order: best sellers first, then newest listings."""
-    return (p['best'] or 999, -int(p['id']))
+    """Default order: best sellers first, then most units sold this year, then newest listings."""
+    return (p['best'] or 999, -p.get('sold', 0), -int(p['id']))
+
+
+RANKPOS = {p['id']: i for i, p in enumerate(sorted(P, key=rank))}
 
 
 def money(x):
@@ -193,7 +196,7 @@ def footer(es=False):
 
 def card(p, tag='li', lazy=True, extra_attrs=''):
     data = (f' data-occasion="{p["occasion"]}" data-type="{p["type"]}" data-colours="{" ".join(p["colours"])}" '
-            f'data-themes="{" ".join(p["themes"])}" data-price="{p["price"]}" data-rank="{(p["best"] or 999) * 100000 - int(p["id"]) // 100000}" '
+            f'data-themes="{" ".join(p["themes"])}" data-price="{p["price"]}" data-rank="{RANKPOS[p["id"]]}" '
             f'data-newness="{int(p["id"])}" data-search="{e(search_text(p))}"') if extra_attrs == 'shop' else ''
     return (f'<{tag} class="card"{data}>'
             f'<button class="fav" type="button" data-id="{p["id"]}" aria-pressed="false" aria-label="Save to party list">{ICON["heart"]}</button>'

@@ -1,4 +1,17 @@
 {
- "note": "Order = position on the home page Best Sellers row. Stand-in until real Etsy sales data: the shop's 4 Featured items, then listings with recent 5-star reviews. Replace with listing IDs ranked by orders from Etsy Shop Manager > Stats.",
- "listing_ids": ["4410734587","4440999347","4454984550","4442111722","4481070423","4387456705","4412070554","4493272465","4510866791","4525799131","4437064037","4435905089"]
+ "note": "Order = Best Sellers on the home page. Ranked by units sold in 2026 (data/sales.json). Refresh by uploading a new Etsy Sold Order Items CSV.",
+ "listing_ids": [
+  "4412070554",
+  "4437064037",
+  "4435905089",
+  "4453756798",
+  "4375876438",
+  "4358688456",
+  "4359127411",
+  "4346790245",
+  "4328482894",
+  "4383134441",
+  "4432911528",
+  "4448714937"
+ ]
 }
