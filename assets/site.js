@@ -269,6 +269,35 @@
     plan();
   }
 
+  /* ---------- email sign-up (posts to a Google Form; responses land in a Google Sheet) ---------- */
+  var cfgRaw = document.documentElement.getAttribute('data-signup');
+  if (cfgRaw) {
+    var cfg = JSON.parse(cfgRaw);
+    $$('form[data-signup]').forEach(function (f) {
+      f.addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        var err = $('.su-error', f), email = f.email.value.trim();
+        if (f.company.value) return;  /* bot trap */
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { err.textContent = document.documentElement.lang === 'es' ? 'Escribe un correo válido, por ejemplo nombre@gmail.com' : 'Enter a valid email address, like name@gmail.com'; err.hidden = false; f.email.focus(); return; }
+        err.hidden = true;
+        var fd = new FormData(), F = cfg.fields;
+        fd.append(F.email, email); fd.append(F.celebration, f.celebration.value);
+        if (f.date.value && F.date) fd.append(F.date, f.date.value);
+        if (F.lang) fd.append(F.lang, document.documentElement.lang);
+        if (F.page) fd.append(F.page, location.pathname);
+        var btn = $('button[type=submit]', f); btn.disabled = true;
+        fetch(cfg.action, { method: 'POST', mode: 'no-cors', body: fd }).then(function () {
+          $('.su-fields', f).hidden = true; $('.su-done', f).hidden = false;
+          var plan = $('.su-plan', f);
+          if (plan && f.date.value) plan.href = href('planner/') + '?event=' + (f.celebration.value === 'other' ? 'quince' : f.celebration.value) + '&date=' + f.date.value;
+          try { localStorage.setItem('digipod-signed-up', '1'); } catch (e) {}
+        }).catch(function () {
+          btn.disabled = false; err.textContent = 'That did not go through. Check your connection and try again.'; err.hidden = false;
+        });
+      });
+    });
+  }
+
   /* teaser form on home sends people to the planner with their date */
   var tf = $('#planner-teaser');
   if (tf) tf.addEventListener('submit', function (e) {

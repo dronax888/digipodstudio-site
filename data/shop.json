@@ -1,6 +1,20 @@
 {
  "note": "Shown on the site. Update from the Etsy shop page when they change (checked 6 Nov 2026).",
- "rating": "4.9", "reviews": 75, "sales": 757, "badge": "Star Seller",
+ "rating": "4.9",
+ "reviews": 75,
+ "sales": 757,
+ "badge": "Star Seller",
  "contact_url": "https://www.etsy.com/messages/new?with_id=502329297&referring_id=30472060&referring_type=shop&recipient_id=502329297",
- "email_quince": "quince@digipodstudio.com", "email_celebrations": "celebrations@digipodstudio.com"
+ "email_quince": "quince@digipodstudio.com",
+ "email_celebrations": "celebrations@digipodstudio.com",
+ "signup": {
+  "action": "https://docs.google.com/forms/d/e/1FAIpQLSfaHW_QS6drsZOIcVzS2Pklf_9c8XL2wt2i8RYi5u4GxWAtUw/formResponse",
+  "fields": {
+   "email": "entry.974211694",
+   "celebration": "entry.1209379291",
+   "date": "entry.1881735932",
+   "lang": "entry.2139201609",
+   "page": "entry.1764645269"
+  }
+ }
 }

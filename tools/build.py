@@ -127,7 +127,7 @@ def page(path, title, desc, body, *, schema=None, og_image=None, lang='en', alte
     lang_link = ('<a class="lang" href="@/" hreflang="en" lang="en">English</a>' if es
                  else '<a class="lang" href="@/es/" hreflang="es" lang="es">Español</a>')
     doc = f'''<!doctype html>
-<html lang="{lang}" data-root="@/" data-ext="@">
+<html lang="{lang}" data-root="@/" data-ext="@"{' data-signup="' + e(json.dumps(SIGNUP)) + '"' if SIGNUP.get('action') else ''}>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -192,6 +192,37 @@ def footer(es=False):
 </div>
 <div class="foot-base"><span>© {TODAY.year} Digipod Studio. Templates are digital downloads, edited in Canva. Canva is a trademark of Canva Pty Ltd; Etsy is a trademark of Etsy, Inc.</span><span>Payments and downloads are handled by Etsy.</span></div>
 </div></footer>'''
+
+
+SIGNUP = SHOP.get('signup', {})
+
+
+def signup_box(es=False, compact=False):
+    """Email sign-up with the free checklist as the reward. Hidden until a form endpoint is configured in data/shop.json."""
+    if not SIGNUP.get('action'):
+        return ''
+    t = (dict(h='Lista gratis para planear su quinceañera', p='Una lista imprimible, mes a mes, desde el save the date hasta el último baile. Además, ideas y diseños nuevos en tu correo, como máximo una vez por semana.',
+              email='Tu correo electrónico', occ='Celebración', date='Fecha de la fiesta (opcional)', btn='Enviarme la lista',
+              legal='Puedes darte de baja cuando quieras. No compartimos tu correo.', ok='¡Listo! Aquí está tu lista', okp='Guárdala o imprímela. Te escribiremos con ideas para tu fiesta.')
+         if es else
+         dict(h='Free quinceañera planning checklist', p='A printable, month-by-month checklist from the save the date to the last dance. Plus new designs and planning ideas by email, at most once a week.',
+              email='Your email', occ='Celebration', date='Party date (optional)', btn='Send me the checklist',
+              legal='Unsubscribe any time. We never share your email.', ok='You are in. Here is your checklist', okp='Save it or print it. We will email you ideas for your celebration.'))
+    opts = ''.join(f'<option value="{v}">{l}</option>' for v, l in
+                   [('quince', 'Quinceañera'), ('wedding', 'Boda' if es else 'Wedding'), ('birthday', 'Cumpleaños' if es else 'Birthday'),
+                    ('mitzvah', 'Bat / Bar Mitzvah'), ('graduation', 'Graduación' if es else 'Graduation'), ('other', 'Otra' if es else 'Other')])
+    return f'''<section class="sec signup{' signup-compact' if compact else ''}" aria-labelledby="su-h"><div class="wrap signup-grid">
+<div><h2 id="su-h">{t['h']}</h2><p class="lede">{t['p']}</p></div>
+<form class="datebox su-form" data-signup novalidate>
+<div class="su-fields"><label for="su-email">{t['email']}</label><input id="su-email" name="email" type="email" autocomplete="email" required placeholder="name@example.com">
+<div class="row" style="margin-top:14px"><div><label for="su-occ">{t['occ']}</label><select id="su-occ" name="celebration">{opts}</select></div>
+<div><label for="su-date">{t['date']}</label><input id="su-date" name="date" type="date"></div></div>
+<input type="text" name="company" tabindex="-1" autocomplete="off" class="sr" aria-hidden="true">
+<button class="btn btn-primary" type="submit">{t['btn']}</button>
+<p class="su-legal">{t['legal']} <a href="@/privacy/">{'Privacidad' if es else 'Privacy'}</a></p>
+<p class="su-error" role="alert" hidden></p></div>
+<div class="su-done" hidden><h3>{t['ok']}</h3><p>{t['okp']}</p><p><a class="btn btn-primary" href="@/checklist/">{'Abrir la lista' if es else 'Open the checklist'}</a> <a class="btn btn-ghost su-plan" href="@/planner/">{'Ver mis fechas' if es else 'See my dates'}</a></p></div>
+</form></div></section>'''
 
 
 def card(p, tag='li', lazy=True, extra_attrs=''):
@@ -386,6 +417,7 @@ def home(articles):
 <div class="reviews">{revs}</div>
 </div></section>
 
+{signup_box()}
 <section class="sec" aria-labelledby="j-h"><div class="wrap">
 <div class="sec-head"><div><h2 id="j-h">Planning ideas from the journal</h2><p class="muted">Timelines, color palettes and step-by-step Canva guides.</p></div><a class="textlink" href="@/journal/">All articles</a></div>
 <div class="posts">{posts}</div>
@@ -638,6 +670,7 @@ def journal_pages(articles):
 <div class="hero-img"><img src="{img}" alt="" fetchpriority="high"></div>
 {toc}<div class="prose">{content}</div>
 </div></article>
+{signup_box(es)}
 <section class="sec band"><div class="wrap"><div class="sec-head"><h2>{'Plantillas para tu fiesta' if es else 'Templates for your celebration'}</h2><a class="textlink" href="@/shop/">{'Ver todas' if es else 'See all templates'}</a></div>
 <ul class="grid" style="list-style:none;margin:0;padding:0">{''.join(card(p) for p in more)}</ul></div></section>'''
             schema = [bc, {'@context': 'https://schema.org', '@type': 'BlogPosting', 'headline': a['title'], 'description': a['description'],
@@ -675,6 +708,7 @@ def spanish_home(articles):
 <li><h3>Edita en Canva</h3><p class="muted">Cambia nombres, fechas, fotos y música desde la computadora o el celular.</p></li>
 <li><h3>Compártelo</h3><p class="muted">Envíalo por WhatsApp o mensaje, publica tu página de RSVP o descarga el MP4 para la pantalla del salón.</p></li></ol></div></section>
 {f'<section class="sec"><div class="wrap"><div class="sec-head"><h2>Del blog</h2><a class="textlink" href="@/es/blog/">Todos los artículos</a></div><div class="posts">{posts}</div></div></section>' if posts else ''}
+{signup_box(True)}
 <section class="sec band"><div class="wrap"><h2>Preguntas frecuentes</h2>{faq_html(faqs)}</div></section>'''
     page('es/index.html', 'Invitaciones de Quinceañera y Slideshows Editables en Canva | Digipod Studio',
          'Plantillas editables para quinceañera y XV años: slideshows, invitaciones en video, save the dates e invitaciones web con RSVP. Personaliza en Canva.',
@@ -692,7 +726,7 @@ def planner_page():
 <div id="p-out" aria-live="polite"></div>
 <a class="btn btn-primary" id="p-ics" href="#" download="digipod-party-timeline.ics" hidden>{ICON['cal']}Add all dates to my calendar</a>
 </div>
-<p class="muted" style="margin-top:18px;font-size:.92rem">Timings are common guidelines. Adjust them for your venue, your family and how far your guests travel.</p></div></section>'''
+<p class="muted" style="margin-top:18px;font-size:.92rem">Timings are common guidelines. Adjust them for your venue, your family and how far your guests travel.</p></div></section>''' + signup_box()
     app = {'@context': 'https://schema.org', '@type': 'WebApplication', 'name': 'Digipod Studio party planner', 'applicationCategory': 'LifestyleApplication',
            'operatingSystem': 'Any', 'offers': {'@type': 'Offer', 'price': '0', 'priceCurrency': 'USD'}, 'url': SITE + '/planner/'}
     page('planner/index.html', 'Quinceañera & Party Planning Timeline Calculator | Digipod Studio',
@@ -735,6 +769,7 @@ def simple_pages():
     page('privacy/index.html', 'Privacy | Digipod Studio', 'How digipodstudio.com handles your information.',
          f'''{nav}<section class="page-head wrap"><h1>Privacy</h1></section><section class="wrap prose prose-narrow">
 <p>This website does not ask you to create an account and does not collect payment details. Purchases happen on Etsy, under <a href="https://www.etsy.com/legal/privacy">Etsy's privacy policy</a>.</p>
+<p>If you sign up for our checklist and emails, we keep your email address, the celebration you chose and the party date (if you gave one) in a private Google Sheet that only Digipod Studio can see. We use it only to send you planning ideas and new designs, at most once a week. To unsubscribe or have your details deleted, reply to any email or write to the address below.</p>
 <p>Your party list is stored only in your own browser on your device. Sharing a list creates a link containing the template numbers you chose and nothing else.</p>
 <p>Product photos load from Etsy's image servers and fonts load from Google Fonts. Those services receive standard technical information such as your IP address when your browser requests them.</p>
 <p>Questions: <a href="mailto:{SHOP["email_quince"]}">{SHOP["email_quince"]}</a>. Last updated {TODAY:%B %-d, %Y}.</p></section>''', schema=[bc], priority='0.2')
@@ -743,6 +778,19 @@ def simple_pages():
          '<section class="page-head wrap"><h1>We could not find that page</h1><p class="lede">The link may be old or mistyped. Search for a template or start from the shop.</p>'
          '<div class="hero-ctas"><a class="btn btn-primary" href="@/shop/">Go to the shop</a><button class="btn btn-ghost" type="button" data-open-search>Search templates</button></div></section>',
          noindex=True)
+
+
+def checklist_page():
+    md = open(os.path.join(ROOTDIR, 'content', 'checklist.md')).read()
+    h = markdown.markdown(md, extensions=['sane_lists'])
+    h = h.replace('<li>[ ] ', '<li><span class="box" aria-hidden="true"></span>')
+    body = f'''<section class="page-head wrap"><h1>Quinceañera planning checklist</h1>
+<p class="lede">Print it, stick it on the fridge and tick it off as a family. Pair it with the <a class="textlink" href="@/planner/">party planner</a> to get the exact dates for your celebration.</p>
+<p class="no-print"><button class="btn btn-primary" type="button" onclick="window.print()">Print or save as PDF</button></p></section>
+<section class="wrap checklist">{h}</section>
+<section class="wrap no-print" style="margin-top:30px"><p class="muted">Find templates for every step in the <a class="textlink" href="@/quinceanera-sweet-16/">quinceañera collection</a>.</p></section>'''
+    page('checklist/index.html', 'Quinceañera Planning Checklist (Printable) | Digipod Studio',
+         'A printable month-by-month quinceañera planning checklist, from the save the date to the thank-you messages.', body, noindex=True, body_page='checklist')
 
 
 def static_files(articles):
@@ -785,6 +833,7 @@ def main():
     product_pages()
     journal_pages(articles)
     planner_page()
+    checklist_page()
     simple_pages()
     static_files(articles)
     n = sum(len(f) for _, _, f in os.walk(OUT))
