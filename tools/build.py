@@ -15,6 +15,8 @@ from sitecopy import OCCASION_COPY, TYPE_COPY, GENERAL_FAQ  # noqa: E402  (tools
 from enrich import COLOURS, THEMES  # noqa: E402
 
 ROOTDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+import hashlib
+ASSET_V = hashlib.md5(open(os.path.join(ROOTDIR, 'assets', 'site.css'), 'rb').read() + open(os.path.join(ROOTDIR, 'assets', 'site.js'), 'rb').read()).hexdigest()[:10]
 PREVIEW = '--preview' in sys.argv
 OUT = os.path.join(ROOTDIR, 'preview' if PREVIEW else 'site')
 SITE = 'https://digipodstudio.com'
@@ -152,7 +154,7 @@ def page(path, title, desc, body, *, schema=None, og_image=None, lang='en', alte
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://i.etsystatic.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&family=Instrument+Sans:wght@400..700&display=swap">
-<link rel="stylesheet" href="@/assets/site.css?v={TODAY:%Y%m%d}">
+<link rel="stylesheet" href="@/assets/site.css?v={ASSET_V}">
 {sch}</head>
 <body data-page="{body_page}">
 <a class="skip" href="#main">{'Ir al contenido' if es else 'Skip to content'}</a>
@@ -173,7 +175,7 @@ def page(path, title, desc, body, *, schema=None, og_image=None, lang='en', alte
 <label class="sr" for="search-q">Search templates</label>
 <input id="search-q" type="search" placeholder="{'Busca por color, evento o estilo' if es else 'Try “pink quinceañera slideshow” or “sage wedding”'}" autocomplete="off">
 <div class="search-results" id="search-results"></div></div></div>
-<script src="@/assets/site.js?v={TODAY:%Y%m%d}" defer></script>
+<script src="@/assets/site.js?v={ASSET_V}" defer></script>
 </body></html>'''
     write(path, doc)
 
@@ -213,11 +215,11 @@ def signup_box(es=False, compact=False):
                     ('mitzvah', 'Bat / Bar Mitzvah'), ('graduation', 'Graduación' if es else 'Graduation'), ('other', 'Otra' if es else 'Other')])
     return f'''<section class="sec signup{' signup-compact' if compact else ''}" aria-labelledby="su-h"><div class="wrap signup-grid">
 <div><h2 id="su-h">{t['h']}</h2><p class="lede">{t['p']}</p></div>
-<form class="datebox su-form" data-signup novalidate>
-<div class="su-fields"><label for="su-email">{t['email']}</label><input id="su-email" name="email" type="email" autocomplete="email" required placeholder="name@example.com">
-<div class="row" style="margin-top:14px"><div><label for="su-occ">{t['occ']}</label><select id="su-occ" name="celebration">{opts}</select></div>
-<div><label for="su-date">{t['date']}</label><input id="su-date" name="date" type="date"></div></div>
-<input type="text" name="company" tabindex="-1" autocomplete="off" class="sr" aria-hidden="true">
+<form class="datebox su-form" data-signup method="post" action="{SIGNUP['action']}" target="_blank" novalidate>
+<div class="su-fields"><label for="su-email">{t['email']}</label><input id="su-email" name="{SIGNUP['fields']['email']}" data-k="email" type="email" autocomplete="email" required placeholder="name@example.com">
+<div class="row" style="margin-top:14px"><div><label for="su-occ">{t['occ']}</label><select id="su-occ" name="{SIGNUP['fields']['celebration']}" data-k="celebration">{opts}</select></div>
+<div><label for="su-date">{t['date']}</label><input id="su-date" name="{SIGNUP['fields']['date']}" data-k="date" type="date"></div></div>
+<input type="text" data-k="company" tabindex="-1" autocomplete="off" class="sr" aria-hidden="true">
 <button class="btn btn-primary" type="submit">{t['btn']}</button>
 <p class="su-legal">{t['legal']} <a href="@/privacy/">{'Privacidad' if es else 'Privacy'}</a></p>
 <p class="su-error" role="alert" hidden></p></div>

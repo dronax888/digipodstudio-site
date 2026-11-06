@@ -35,7 +35,7 @@ h1{font-size:var(--step-4)} h2{font-size:var(--step-3)} h3{font-size:var(--step-
 p{margin:0 0 1em}
 .lede{font-size:var(--step-1);line-height:1.45;color:var(--velvet-2);max-width:34em}
 .muted{color:var(--mauve)}
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.sr{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;border:0!important;margin:-1px!important;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
 /* buttons */
 .btn{display:inline-flex;align-items:center;gap:.55em;font:600 .98rem/1 var(--sans);padding:1em 1.5em;border-radius:999px;border:1.5px solid transparent;text-decoration:none;cursor:pointer;transition:background .2s,color .2s,border-color .2s}

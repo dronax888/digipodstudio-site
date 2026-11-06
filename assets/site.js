@@ -276,20 +276,21 @@
     $$('form[data-signup]').forEach(function (f) {
       f.addEventListener('submit', function (ev) {
         ev.preventDefault();
-        var err = $('.su-error', f), email = f.email.value.trim();
-        if (f.company.value) return;  /* bot trap */
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { err.textContent = document.documentElement.lang === 'es' ? 'Escribe un correo válido, por ejemplo nombre@gmail.com' : 'Enter a valid email address, like name@gmail.com'; err.hidden = false; f.email.focus(); return; }
+        var k = function (n) { return f.querySelector('[data-k="' + n + '"]'); };
+        var err = $('.su-error', f), email = k('email').value.trim();
+        if (k('company').value) return;  /* bot trap */
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { err.textContent = document.documentElement.lang === 'es' ? 'Escribe un correo válido, por ejemplo nombre@gmail.com' : 'Enter a valid email address, like name@gmail.com'; err.hidden = false; k('email').focus(); return; }
         err.hidden = true;
         var fd = new FormData(), F = cfg.fields;
-        fd.append(F.email, email); fd.append(F.celebration, f.celebration.value);
-        if (f.date.value && F.date) fd.append(F.date, f.date.value);
+        fd.append(F.email, email); fd.append(F.celebration, k('celebration').value);
+        if (k('date').value && F.date) fd.append(F.date, k('date').value);
         if (F.lang) fd.append(F.lang, document.documentElement.lang);
         if (F.page) fd.append(F.page, location.pathname);
         var btn = $('button[type=submit]', f); btn.disabled = true;
         fetch(cfg.action, { method: 'POST', mode: 'no-cors', body: fd }).then(function () {
           $('.su-fields', f).hidden = true; $('.su-done', f).hidden = false;
           var plan = $('.su-plan', f);
-          if (plan && f.date.value) plan.href = href('planner/') + '?event=' + (f.celebration.value === 'other' ? 'quince' : f.celebration.value) + '&date=' + f.date.value;
+          if (plan && k('date').value) plan.href = href('planner/') + '?event=' + (k('celebration').value === 'other' ? 'quince' : k('celebration').value) + '&date=' + k('date').value;
           try { localStorage.setItem('digipod-signed-up', '1'); } catch (e) {}
         }).catch(function () {
           btn.disabled = false; err.textContent = 'That did not go through. Check your connection and try again.'; err.hidden = false;
