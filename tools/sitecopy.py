@@ -120,7 +120,7 @@ TYPE_COPY = {
 }
 
 GENERAL_FAQ = [
-    ('How do I get my template after I buy it?', 'You check out on Etsy, which handles the payment. Your digital download is ready right away and gives you access to your template in Canva.'),
+    ('How do I get my template after I buy it?', 'Complete your purchase on Etsy, then download the PDF file sent to your email. Click the Canva link inside the PDF to open your template and start personalizing it.'),
     ('Do I need design skills?', 'No. Click any text to change it, drag in your photos, and download. If you get stuck, message the shop and we will help.'),
     ('Can I edit on my phone?', 'Yes. Canva works in the browser and in the free Canva app on iPhone and Android, though a laptop is easier for long slideshows.'),
     ('Can I write it in Spanish?', 'Yes. Every word is editable, so you can use Spanish, English or both, and several designs come bilingual already.'),

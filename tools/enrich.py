@@ -39,8 +39,8 @@ COLOURS = [
     ('blue', 'Blue', '#8DB3DA', r'\b(blue|navy|dusty blue|light blue|royal blue|baby blue|midnight)\b'),
     ('green', 'Green & sage', '#7FA287', r'\b(green|sage|emerald|olive|mint)\b'),
     ('purple', 'Lavender & purple', '#A98BC9', r'\b(lavender|lilac|purple|violet|plum)\b'),
-    ('black', 'Black & silver', '#2C2730', r'\b(black|silver|noir)\b'),
-    ('white', 'White & ivory', '#EEE6DC', r'\b(white|ivory|cream|snow)\b'),
+    ('black', 'Black', '#2C2730', r'\b(black|noir)\b'),
+    ('white', 'White, ivory & silver', '#EEE6DC', r'\b(white|ivory|cream|snow|silver)\b'),
 ]
 
 THEMES = [
@@ -160,9 +160,24 @@ def main():
     TW = {'princess': 'Princess', 'floral': 'Floral', 'winter': 'Winter', 'enchanted': 'Enchanted', 'bows': 'Bow',
           'neon': 'Neon', 'glam': 'Glam', 'musical': ''}
     seen = Counter()
+    PHRASE = re.compile(r'\b((?:light|dusty|royal|navy|baby|hot|rose|champagne|sage|emerald|blush|midnight|pastel)\s+)?'
+                        r'(blue|pink|gold|red|green|lavender|purple|lilac|black|white|ivory|burgundy|fuchsia|blush|champagne|silver|rosegold|rose gold|sage|emerald|navy)'
+                        r'(\s+(?:and|&)\s+(?:light |dusty |royal |rose )?(?:blue|pink|gold|red|green|lavender|purple|black|white|ivory|silver|champagne|sage))?\b', re.I)
     for p in out:
         if cnt[p['name'].lower()] > 1:
             low = p['name'].lower()
+            m = None
+            for part in p['subtitle_parts'] + [p['etsy_title']]:
+                m = PHRASE.search(part)
+                if m:
+                    break
+            if m and m.group(0).lower() not in low:
+                phrase = ' '.join(w if w.lower() in ('and',) else w.capitalize() for w in m.group(0).replace('&', 'and').split())
+                p['name'] = f"{phrase} {p['name']}"
+                seen[p['name'].lower()] += 1
+                if seen[p['name'].lower()] > 1:
+                    p['name'] += f" (Design {seen[p['name'].lower()]})"
+                continue
             words = [CW[c] for c in p['colours'][:2] if CW[c].lower().split()[0] not in low]
             words += [TW[t] for t in p['themes'][:1] if TW[t] and TW[t].lower() not in low]
             if words:
@@ -170,6 +185,10 @@ def main():
         seen[p['name'].lower()] += 1
         if seen[p['name'].lower()] > 1:
             p['name'] += f" (Design {seen[p['name'].lower()]})"
+    ov = json.load(open(D('name_overrides.json')))['names'] if os.path.exists(D('name_overrides.json')) else {}
+    for p in out:
+        if p['id'] in ov:
+            p['name'] = ov[p['id']]
     slugs = Counter()
     for p in out:
         b = slugify(p['name'].replace('(Design', ''))

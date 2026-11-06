@@ -143,7 +143,12 @@
       getProducts().then(function (all) {
         var pool = all.filter(function (p) { return p.occasion === 'quinceanera-sweet-16'; });
         if (!was) { b.setAttribute('aria-pressed', 'true'); pool = pool.filter(function (p) { return p.colours.indexOf(c) > -1; }); }
+        var feats = {}; try { feats = JSON.parse(ribbon.getAttribute('data-features') || '{}'); } catch (x) {}
         var mix = [], types = {};
+        if (!was && feats[c]) {  /* the shop's chosen design for this colour plays first */
+          var f = all.filter(function (p) { return p.id === feats[c]; })[0];
+          if (f) { mix.push(f); types[f.type] = 1; pool = pool.filter(function (p) { return p.id !== f.id; }); }
+        }
         pool.forEach(function (p) { if (mix.length < 6 && (types[p.type] || 0) < 2) { mix.push(p); types[p.type] = (types[p.type] || 0) + 1; } });
         pool.forEach(function (p) { if (mix.length < 6 && mix.indexOf(p) < 0) mix.push(p); });
         slidesBox.innerHTML = mix.map(function (p) {

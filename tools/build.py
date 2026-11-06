@@ -28,6 +28,7 @@ load = lambda n: json.load(open(os.path.join(ROOTDIR, 'data', n)))
 P = load('products.json')
 REVIEWS = load('reviews.json')
 SHOP = load('shop.json')
+FEATURES = load('colour_features.json')['features'] if os.path.exists(os.path.join(ROOTDIR, 'data', 'colour_features.json')) else {}
 BYID = {p['id']: p for p in P}
 COL = {c[0]: {'slug': c[0], 'label': c[1], 'hex': c[2]} for c in COLOURS}
 THM = {t[0]: t[1] for t in THEMES}
@@ -383,7 +384,7 @@ def home(articles):
 <div class="hero-copy">
 <h1>Invitations and slideshows for the day she turns <em>quince</em></h1>
 <p class="lede">Editable in Canva, in English or Spanish. Choose her colors, add your photos and share it with the whole family the same day.</p>
-<div class="ribbon" id="ribbon"><span class="ribbon-label" id="ribbon-l">What are her party colors?</span>
+<div class="ribbon" id="ribbon" data-features='{json.dumps(FEATURES)}'><span class="ribbon-label" id="ribbon-l">What are her party colors?</span>
 <ul class="swatches" aria-labelledby="ribbon-l">{sw}</ul></div>
 <div class="hero-ctas"><a class="btn btn-primary" href="@/quinceanera-sweet-16/">Shop quinceañera</a><a class="btn btn-ghost btn-ghost-light" href="@/shop/">Browse all {len(P)} templates</a></div>
 <div class="trust"><span><span class="stars" aria-hidden="true">★★★★★</span> <b>{SHOP["rating"]}</b> from {SHOP["reviews"]} Etsy reviews</span><span><b>{SHOP["sales"]}+</b> orders</span><span><b>Star Seller</b> on Etsy</span></div>
@@ -418,12 +419,9 @@ def home(articles):
 </div></section>
 
 <section class="sec dark" aria-labelledby="how-h"><div class="wrap">
-<div class="sec-head" data-reveal><h2 id="how-h" style="color:var(--pearl)">Ready the same day</h2><a class="textlink" href="@/how-it-works/">How it works in detail</a></div>
-<ol class="steps">
-<li data-reveal><h3>Order on Etsy</h3><p class="muted">Checkout is handled by Etsy, so your payment is protected. Your download is ready right away.</p></li>
-<li data-reveal><h3>Open it in Canva</h3><p class="muted">Change names, dates, photos and music in your browser or the Canva app. No design skills needed.</p></li>
-<li data-reveal><h3>Share or play it</h3><p class="muted">Send it by text or WhatsApp, publish your RSVP site, or download the MP4 for the venue screen.</p></li>
-</ol></div></section>
+<div class="sec-head" data-reveal><h2 id="how-h" style="color:var(--pearl)">How it works</h2><a class="textlink" href="@/how-it-works/">More details and questions</a></div>
+{steps_html()}
+</div></section>
 
 <section class="sec" aria-labelledby="plan-h"><div class="wrap planner-teaser">
 <div><h2 id="plan-h">When should each piece go out?</h2><p class="lede">Enter the party date. We work backwards to when to send the save the date and the invitation, when the RSVP closes and when to finish the slideshow, and you can add every step to your calendar.</p></div>
@@ -456,6 +454,38 @@ def home(articles):
          'Editable quinceañera, sweet 16, wedding and birthday templates: slideshows, video invitations, save the dates and RSVP websites. Personalize in Canva, share the same day.',
          body, schema=[ORG, website, best_list, faq_schema(GENERAL_FAQ)], og_image=best[0]['img_lg'], body_page='home', priority='1.0',
          alternates={'en': SITE + '/', 'es': SITE + '/es/', 'x-default': SITE + '/'})
+
+
+SAVE_SHARE = {
+    'website-invitations': 'Publish your website and share the link with your guests.',
+    'video-invitations': 'Download your finished video and share it with your guests.',
+    'save-the-dates': 'Download your finished video and share it with your guests.',
+    'save-the-date-teasers': 'Download your finished video and share it with your guests.',
+    'slideshows': 'Download your finished video and play it at the party or share it with your guests.',
+    'screen-displays-banners': 'Download your finished video and play it on the venue screen.',
+    'default': 'Download your finished design and share or print it.',
+}
+HOW_STEPS = {
+    'en': [('Purchase', 'cart', 'Choose your favorite design and complete your purchase.'),
+           ('Download', 'pdf', 'Download the PDF file sent to your email.'),
+           ('Personalize', 'canva', 'Click the Canva link in the PDF and customize your invitation with your details, photos, and more.'),
+           ('Save & share', 'share', '<strong>Video invitation:</strong> download your finished video and share it with your guests.<br><strong>Website invitation:</strong> publish your website and share the link with your guests.')],
+    'es': [('Compra', 'cart', 'Elige tu diseño favorito y completa tu compra.'),
+           ('Descarga', 'pdf', 'Descarga el archivo PDF que llega a tu correo.'),
+           ('Personaliza', 'canva', 'Haz clic en el enlace de Canva del PDF y personaliza tu invitación con tus datos, fotos y más.'),
+           ('Guarda y comparte', 'share', '<strong>Invitación en video:</strong> descarga tu video terminado y compártelo con tus invitados.<br><strong>Invitación web:</strong> publica tu página y comparte el enlace con tus invitados.')],
+}
+STEP_ICON = {
+    'cart': '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 9h6l4 22h22l4-15H15"/><circle cx="19" cy="38" r="3"/><circle cx="35" cy="38" r="3"/><path d="M27 25s-5-3-5-6.2c0-1.8 1.4-3 3-3 1 0 1.6.5 2 1.2.4-.7 1-1.2 2-1.2 1.6 0 3 1.2 3 3 0 3.2-5 6.2-5 6.2z" class="fill"/></svg>',
+    'pdf': '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M7 19l17 12 17-12v20H7z"/><path d="M7 19l17-11 17 11"/><rect x="13" y="12" width="22" height="12" rx="2" class="paper"/><text x="24" y="21" text-anchor="middle" font-size="7" font-weight="700" font-family="Instrument Sans, sans-serif" class="txt">PDF</text></svg>',
+    'canva': '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="9" width="36" height="24" rx="3"/><path d="M3 37h42"/><text x="24" y="25" text-anchor="middle" font-size="9" font-style="italic" font-family="Bodoni Moda, Georgia, serif" class="txt">Canva</text><path d="M33 27l7 7-3 1 2 4-2 1-2-4-2 2z" class="fill"/></svg>',
+    'share': '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M17 20h-6v20h26V20h-6"/><path d="M24 30V6M17 13l7-7 7 7"/></svg>',
+}
+
+
+def steps_html(lang='en', light=False):
+    items = ''.join(f'<li data-reveal><div class="step-ico">{STEP_ICON[ic]}</div><h3>{e(t)}</h3><p>{d}</p></li>' for t, ic, d in HOW_STEPS[lang])
+    return f'<ol class="steps steps4{" steps-light" if light else ""}">{items}</ol>'
 
 
 def review_html(r):
@@ -619,7 +649,7 @@ def product_pages():
 <div class="pdp-body">
 <h1>{e(p["name"])}</h1>{best_line}
 <p class="price-lg">{money(p["price"])}</p>
-<p class="note">Digital template. You check out securely on Etsy and get your download right away.</p>
+<p class="note">Digital template. Complete your purchase on Etsy and the PDF with your Canva link is sent to your email.</p>
 <div class="buy"><a class="btn btn-primary" href="{p["url"]}" rel="noopener">{ICON["bag"]}Buy on Etsy</a>
 <button class="fav" type="button" data-id="{p["id"]}" aria-pressed="false">{ICON["heart"]}<span>Save to party list</span></button></div>
 <ul class="facts">{facts_html}</ul>
@@ -629,7 +659,7 @@ def product_pages():
 {f'<p>{e(desc_alt)}</p>' if desc_alt else ''}
 <p>{e(tc["use"])}</p>
 <h2>How it works</h2>
-<ol><li>Order on Etsy. Your download is ready as soon as payment goes through.</li><li>Open your template in Canva on a computer, tablet or phone.</li><li>Change the names, dates, photos and music, then download or share.</li></ol>
+<ol><li><strong>Purchase.</strong> Complete your purchase on Etsy.</li><li><strong>Download.</strong> Download the PDF file sent to your email.</li><li><strong>Personalize.</strong> Click the Canva link in the PDF and add your details, photos and more.</li><li><strong>Save &amp; share.</strong> {SAVE_SHARE.get(p['type'], SAVE_SHARE['default'])}</li></ol>
 <h2>Questions</h2>{faq_html(faqs)}
 </div></div>
 <div class="sticky-buy"><span><strong>{money(p["price"])}</strong></span><a class="btn btn-primary" href="{p["url"]}" rel="noopener">Buy on Etsy</a></div>
@@ -713,7 +743,7 @@ def spanish_home(articles):
             ('quinceanera-sweet-16/save-the-dates/', 'Save the date para quinceañera'), ('quinceanera-sweet-16/website-invitations/', 'Invitaciones web con confirmación (RSVP)'),
             ('wedding-anniversary/', 'Bodas y aniversarios'), ('birthday-baby/', 'Cumpleaños y primer añito')]
     chips = '<ul class="chips">' + ''.join(f'<li><a href="@/{h}">{t}</a></li>' for h, t in cats) + '</ul>'
-    faqs = [('¿Cómo recibo mi plantilla?', 'Compras en Etsy, que procesa el pago de forma segura. Tu descarga está lista al instante y te da acceso a tu plantilla en Canva.'),
+    faqs = [('¿Cómo recibo mi plantilla?', 'Completa tu compra en Etsy y descarga el archivo PDF que llega a tu correo. Haz clic en el enlace de Canva del PDF para abrir tu plantilla y personalizarla.'),
             ('¿Puedo escribirla en español?', 'Sí. Puedes cambiar cada palabra, así que puedes usar español, inglés o los dos. Varias plantillas ya vienen bilingües.'),
             ('¿Puedo editar desde mi celular?', 'Sí. Canva funciona en el navegador y en la app gratuita de Canva para iPhone y Android.'),
             ('¿Me envían algo por correo?', 'No. Son plantillas digitales, así que no hay envío ni espera.')]
@@ -724,10 +754,7 @@ def spanish_home(articles):
 <div class="trust"><span><span class="stars" aria-hidden="true">★★★★★</span> <b>{SHOP["rating"]}</b> en {SHOP["reviews"]} reseñas de Etsy</span><span><b>{SHOP["sales"]}+</b> pedidos</span><span><b>Star Seller</b> en Etsy</span></div>
 {chips}</div></div></section>
 <section class="sec" style="padding-top:20px"><div class="wrap"><div class="sec-head"><div><h2>Las más vendidas</h2><p class="muted">Los diseños que más eligen las familias.</p></div><a class="textlink" href="@/shop/">Ver todas</a></div><ol class="ranked">{ranked}</ol></div></section>
-<section class="sec dark"><div class="wrap"><h2 style="color:var(--pearl)">Lista el mismo día</h2><ol class="steps">
-<li data-reveal><h3>Compra en Etsy</h3><p class="muted">Etsy procesa el pago de forma segura y tu descarga está lista al instante.</p></li>
-<li><h3>Edita en Canva</h3><p class="muted">Cambia nombres, fechas, fotos y música desde la computadora o el celular.</p></li>
-<li><h3>Compártelo</h3><p class="muted">Envíalo por WhatsApp o mensaje, publica tu página de RSVP o descarga el MP4 para la pantalla del salón.</p></li></ol></div></section>
+<section class="sec dark"><div class="wrap"><h2 style="color:var(--pearl)">Cómo funciona</h2>{steps_html('es')}</div></section>
 {f'<section class="sec"><div class="wrap"><div class="sec-head"><h2>Del blog</h2><a class="textlink" href="@/es/blog/">Todos los artículos</a></div><div class="posts">{posts}</div></div></section>' if posts else ''}
 {signup_box(True)}
 <section class="sec band"><div class="wrap"><h2>Preguntas frecuentes</h2>{faq_html(faqs)}</div></section>'''
@@ -763,16 +790,13 @@ def simple_pages():
 <section class="wrap" id="party"></section>''', body_page='party-list', noindex=True)
 
     nav, bc = crumbs([('', 'Home'), (None, 'How it works')])
-    steps = '''<ol class="prose" style="padding-left:1.2em">
-<li><strong>Pick your design.</strong> Browse by celebration or by color. Tap the heart to keep favorites in your party list and share the list with family.</li>
-<li><strong>Order on Etsy.</strong> Every Buy button goes to our Etsy shop. Etsy handles payment, so you can use the cards and wallets you already trust there.</li>
-<li><strong>Get your download.</strong> It is ready as soon as payment goes through and gives you access to your template in Canva.</li>
-<li><strong>Personalize it.</strong> In Canva, click any text to change it, drag in your own photos and video clips, and pick your music.</li>
-<li><strong>Share or play it.</strong> Download an MP4 for videos and slideshows, publish website invitations to a free link, or download images and PDFs for printing.</li></ol>'''
-    page('how-it-works/index.html', 'How It Works: Order, Edit in Canva, Share | Digipod Studio',
-         'How to order a Digipod Studio template on Etsy, edit it in Canva and share it with your guests the same day.',
-         f'{nav}<section class="page-head wrap"><h1>How it works</h1><p class="lede">From choosing a design to playing it at the party.</p></section><section class="wrap prose-narrow">{steps}</section>'
-         f'<section class="sec"><div class="wrap"><h2>Questions</h2>{faq_html(GENERAL_FAQ)}</div></section>', schema=[bc, faq_schema(GENERAL_FAQ)])
+    howto = {'@context': 'https://schema.org', '@type': 'HowTo', 'name': 'How to order and personalize a Digipod Studio template',
+             'step': [{'@type': 'HowToStep', 'position': i + 1, 'name': t, 'text': re.sub('<[^>]+>', ' ', d)} for i, (t, ic, d) in enumerate(HOW_STEPS['en'])]}
+    page('how-it-works/index.html', 'How It Works: Purchase, Download, Personalize, Share | Digipod Studio',
+         'Purchase your design, download the PDF sent to your email, personalize it in Canva from the link inside, then save and share your video or website invitation.',
+         f'{nav}<section class="page-head wrap"><h1>How it works</h1><p class="lede">Four steps from choosing a design to sharing it with your guests.</p></section>'
+         f'<section class="wrap">{steps_html("en", True)}</section>'
+         f'<section class="sec"><div class="wrap"><h2>Questions</h2>{faq_html(GENERAL_FAQ)}</div></section>', schema=[bc, howto, faq_schema(GENERAL_FAQ)])
 
     nav, bc = crumbs([('', 'Home'), (None, 'About')])
     page('about/index.html', 'About Digipod Studio', 'Digipod Studio designs editable Canva templates for quinceañeras, weddings, birthdays and mitzvahs, sold on Etsy.',

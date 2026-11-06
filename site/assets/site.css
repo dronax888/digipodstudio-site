@@ -463,3 +463,45 @@ body[data-page=home] .top:not(.scrolled) .nav a:hover,body[data-page=home] .top:
   body{font-size:1.12rem}
   .grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
 }
+
+/* ===== How it works, 4 steps with icons ===== */
+.steps4{grid-template-columns:repeat(4,1fr);gap:clamp(20px,3vw,44px)}
+.steps4 li{border-top:0;padding-top:0;position:relative;text-align:center}
+.steps4 li::before{position:absolute;top:-6px;left:50%;transform:translateX(-50%);z-index:2;width:44px;height:44px;line-height:44px;border-radius:50%;background:var(--rosa);color:#fff;font-size:1.35rem;font-style:normal;font-weight:600;margin:0;font-family:var(--sans)}
+.step-ico{width:128px;height:128px;margin:16px auto 18px;border-radius:50%;display:grid;place-items:center;background:rgba(252,247,249,.06);box-shadow:0 0 0 1.5px rgba(214,178,120,.7) inset}
+.step-ico svg{width:58px;height:58px;fill:none;stroke:#FF9CCB;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.step-ico svg .fill{fill:#FF9CCB;stroke:none}
+.step-ico svg .paper{fill:#2B0B25}
+.step-ico svg .txt{fill:#FF9CCB;stroke:none}
+.steps4 h3{font-family:var(--sans);font-weight:700;font-size:1.25rem;letter-spacing:.01em;margin-bottom:.45em}
+.steps4 p{color:#E9D5E0;font-size:1rem;line-height:1.6;max-width:24em;margin:0 auto}
+.steps4 p strong{color:#fff}
+.steps-light h3{color:var(--velvet)}
+.steps-light p{color:var(--velvet-2)}.steps-light p strong{color:var(--velvet)}
+.steps-light .step-ico{background:#fff;box-shadow:0 0 0 1.5px var(--gilt) inset,0 10px 30px rgba(43,11,37,.06)}
+.steps-light .step-ico svg{stroke:var(--rosa)}.steps-light .step-ico svg .fill,.steps-light .step-ico svg .txt{fill:var(--rosa)}.steps-light .step-ico svg .paper{fill:#fff}
+@media (max-width:980px){.steps4{grid-template-columns:repeat(2,1fr);row-gap:44px}}
+@media (max-width:520px){.steps4{grid-template-columns:1fr}}
+
+/* ===== Clearer type =====
+   Bodoni stays for big headlines only, set at a sturdier weight and smaller optical size
+   (thicker hairlines). Everything small switches to the sans. */
+h1,h2{font-weight:600;font-variation-settings:"opsz" 24;letter-spacing:-.005em}
+h3,.card h3,.post h3,.set h3,.occ h3,.faq summary,.review blockquote,.now a,.pdp .price-lg,.toc strong{font-family:var(--sans)!important;font-variation-settings:normal}
+h3{font-weight:700;letter-spacing:0}
+.occ h3{font-weight:700;font-size:clamp(1.3rem,1.1rem + .8vw,1.75rem)}
+.occ:first-child h3{font-family:var(--display)!important;font-weight:600;font-variation-settings:"opsz" 24;font-size:var(--step-3)}
+.faq summary{font-weight:600;font-size:1.1rem}
+.review blockquote{font-size:1.08rem;font-weight:500;line-height:1.5}
+.now a{font-weight:600;font-size:clamp(1rem,1.3vw,1.15rem)}
+.pdp .price-lg{font-weight:700}
+.rank{font-family:var(--sans)!important;font-style:normal;font-weight:700;font-size:1.35rem;padding:6px 14px 8px 12px}
+.steps li::before{font-family:var(--sans)}
+.logo span{font-weight:600;font-variation-settings:"opsz" 24}
+.lede{color:#3a1934}
+.hero-cine .lede{color:#F1E3EA}
+.muted{color:#5f4a5a}
+.card .meta{color:#5f4a5a}
+.hero-cine .trust{color:#E6D3DE}
+.marquee + .sec .muted{color:#5f4a5a}
+body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
