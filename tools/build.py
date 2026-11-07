@@ -508,6 +508,7 @@ def review_html(r):
 
 
 ART_IMG = {}
+BY_ID_ALL = {p['id']: p for p in P}
 
 
 def assign_article_images(articles):
@@ -526,6 +527,12 @@ def assign_article_images(articles):
             if pick:
                 break
         pick = pick or P[0]
+        # a colour with a chosen lead design (data/colour_features.json) always shows that design
+        for c in pick.get('colours') or []:
+            fid = FEATURES.get(c)
+            if fid and fid != pick['id'] and fid not in used and fid in BY_ID_ALL:
+                pick = BY_ID_ALL[fid]
+                break
         used.add(pick['id'])
         ART_IMG[a['slug']] = pick['img_lg']
 
