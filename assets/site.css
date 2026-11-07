@@ -311,6 +311,7 @@ input:focus,select:focus{border-color:var(--velvet);outline:none}
 .foot li{margin-bottom:8px}
 .foot a{text-decoration:none;color:#F4E1EA}.foot a:hover{text-decoration:underline}
 .foot .logo span{color:var(--pearl)}
+.foot-social{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-top:6px}.foot-social>span{color:#D9C3D1;font-size:.9rem;width:100%}.foot-social a{display:inline-flex;align-items:center;gap:7px;font-weight:600}.foot-social svg{background:#1877F2;color:#fff;border-radius:50%;padding:3px;width:24px;height:24px}
 .foot .btn-light{color:var(--velvet)}.foot .btn-light:hover{text-decoration:none;background:#fff}
 .foot-base{border-top:1px solid rgba(252,247,249,.18);margin-top:44px;padding-top:22px;font-size:.88rem;color:#D9C3D1;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 @media (max-width:800px){.foot-grid{grid-template-columns:1fr 1fr}}

@@ -23,6 +23,11 @@ OUT = os.path.join(ROOTDIR, 'preview' if PREVIEW else 'site')
 SITE = 'https://digipodstudio.com'
 BRAND = 'Digipod Studio'
 ETSY_SHOP = 'https://www.etsy.com/shop/DigipodStudio'
+SOCIAL = [  # official DigipodStudio social pages (shown in the footer and in Organization sameAs)
+    ('Facebook · Celebrations', 'https://www.facebook.com/digipodstudiocelebrations'),
+    ('Facebook · Quince & Sweet 16', 'https://www.facebook.com/digipodstudioquince'),
+]
+FB_ICON = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor"><path d="M13.5 22v-8h2.7l.4-3.2h-3.1V8.8c0-.9.3-1.6 1.6-1.6h1.7V4.4c-.3 0-1.3-.1-2.5-.1-2.4 0-4.1 1.5-4.1 4.2v2.3H7.5V14h2.7v8h3.3z"/></svg>'
 TODAY = datetime.date.today()
 
 load = lambda n: json.load(open(os.path.join(ROOTDIR, 'data', n)))
@@ -186,12 +191,14 @@ def page(path, title, desc, body, *, schema=None, og_image=None, lang='en', alte
 
 def footer(es=False):
     occ = ''.join(f'<li><a href="@/{o}/">{OCC_NAME[o]}</a></li>' for o in OCC_ORDER)
+    social = ''.join(f'<a href="{u}" rel="noopener" target="_blank">{FB_ICON}<span>{n.split(" · ")[1]}</span></a>' for n, u in SOCIAL)
     cols = ''.join(f'<li><a href="@/colors/{c}/">{COL[c]["label"]}</a></li>' for c in ['pink', 'champagne', 'blue', 'red', 'green', 'purple'])
     return f'''<footer class="foot"><div class="wrap">
 <div class="foot-grid">
 <div><a class="logo" href="@/">{LOGO}<span>Digipod Studio</span></a>
 <p style="margin-top:16px;max-width:30em;color:#D9C3D1">{'Plantillas editables en Canva para quinceañeras, bodas y cumpleaños. Compra segura en Etsy.' if es else 'Editable Canva templates for quinceañeras, sweet 16s, weddings and birthdays. Designed by Digipod Studio, sold securely on Etsy.'}</p>
-<p><a class="btn btn-light" href="{ETSY_SHOP}" rel="noopener">{ICON['bag']}{'Tienda en Etsy' if es else 'Visit our Etsy shop'}</a></p></div>
+<p><a class="btn btn-light" href="{ETSY_SHOP}" rel="noopener">{ICON['bag']}{'Tienda en Etsy' if es else 'Visit our Etsy shop'}</a></p>
+<p class="foot-social"><span>{'Síguenos' if es else 'Follow us'}</span>{social}</p></div>
 <div><h4>Occasions</h4><ul>{occ}</ul></div>
 <div><h4>Shop by color</h4><ul>{cols}<li><a href="@/matching-sets/">Matching sets</a></li></ul></div>
 <div><h4>Help</h4><ul><li><a href="@/how-it-works/">How it works</a></li><li><a href="@/planner/">Party planner</a></li><li><a href="@/journal/">Journal</a></li><li><a href="@/es/">En español</a></li><li><a href="@/about/">About us</a></li><li><a href="@/contact/">Contact</a></li><li><a href="@/privacy/">Privacy</a></li></ul></div>
@@ -267,7 +274,7 @@ def faq_schema(faqs):
 
 
 ORG = {'@context': 'https://schema.org', '@type': 'Organization', 'name': BRAND, 'url': SITE,
-       'logo': SITE + '/assets/favicon.svg', 'sameAs': [ETSY_SHOP]}
+       'logo': SITE + '/assets/favicon.svg', 'sameAs': [ETSY_SHOP] + [u for _, u in SOCIAL]}
 
 
 # ---------------------------------------------------------------- matching sets
