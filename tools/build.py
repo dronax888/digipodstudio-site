@@ -851,6 +851,8 @@ def static_files(articles):
                'icons': [{'src': '/assets/favicon.svg', 'sizes': 'any', 'type': 'image/svg+xml'}]}, open(os.path.join(OUT, 'site.webmanifest'), 'w'))
     if PREVIEW:
         return
+    if SHOP.get('indexnow_key'):  # IndexNow ownership file (Bing, Yandex, Seznam, Naver)
+        open(os.path.join(OUT, SHOP['indexnow_key'] + '.txt'), 'w').write(SHOP['indexnow_key'])
     open(os.path.join(OUT, 'CNAME'), 'w').write('digipodstudio.com\n')
     open(os.path.join(OUT, '.nojekyll'), 'w').write('')
     open(os.path.join(OUT, 'robots.txt'), 'w').write(f'User-agent: *\nAllow: /\nDisallow: /party-list/\n\nSitemap: {SITE}/sitemap.xml\n')

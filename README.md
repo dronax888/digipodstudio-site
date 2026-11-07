@@ -45,6 +45,10 @@ One article a day from `data/content-calendar.json`. Rules for every article:
 5. No invented statistics, prices or quotes. Never quote song lyrics. Only general, widely accepted advice.
 6. Spanish articles are written natively in Spanish (US Latino audience), not translated word for word.
 
+## IndexNow (instant ping to Bing and others)
+
+After every deploy, GitHub Actions runs `tools/indexnow.py`, which sends the pages that changed in that commit to IndexNow. Put `[indexnow all]` in a commit message to resend every page in the sitemap. The key file is `site/<indexnow_key>.txt` (key in `data/shop.json`).
+
 ## Links
 
 All Buy buttons use Etsy's Share & Save format (`digipodstudio.etsy.com/listing/<ID>`).
