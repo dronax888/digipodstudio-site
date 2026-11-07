@@ -500,8 +500,31 @@ def review_html(r):
             f'<blockquote>{e(r["text"])}</blockquote><figcaption>{e(name)}, {e(r["date"])}{on}</figcaption></figure>')
 
 
+ART_IMG = {}
+
+
+def assign_article_images(articles):
+    """Give every article its own cover: the best match for all its tags not already used by a newer article."""
+    used = set()
+    for a in sorted(articles, key=lambda x: x['date'], reverse=True):
+        if a.get('image'):
+            ART_IMG[a['slug']] = a['image']
+            continue
+        pick = None
+        for tags in (a['tags'], a['tags'][:1], []):
+            for p in pick_products(tags, 60):
+                if p['id'] not in used:
+                    pick = p
+                    break
+            if pick:
+                break
+        pick = pick or P[0]
+        used.add(pick['id'])
+        ART_IMG[a['slug']] = pick['img_lg']
+
+
 def post_card(a):
-    img = a.get('image') or (pick_products(a['tags'][:1], 1) or [P[0]])[0]['img_lg']
+    img = ART_IMG.get(a['slug']) or a.get('image') or (pick_products(a['tags'][:1], 1) or [P[0]])[0]['img_lg']
     return (f'<article class="post" data-reveal><a class="cover" href="@/{a["path"]}" tabindex="-1" aria-hidden="true"><img loading="lazy" src="{img}" alt=""></a>'
             f'<h3><a href="@/{a["path"]}">{e(a["title"])}</a></h3><p>{e(a["description"])}</p></article>')
 
@@ -706,7 +729,7 @@ def journal_pages(articles):
             if len(heads) >= 3:
                 toc = (f'<nav class="toc" aria-label="Contents"><strong>{"En este artículo" if es else "In this article"}</strong><ol>'
                        + ''.join(f'<li><a href="#{i}">{t}</a></li>' for i, t in heads) + '</ol></nav>')
-            img = a.get('image') or (pick_products(a['tags'][:2], 1) or [P[0]])[0]['img_lg']
+            img = ART_IMG.get(a['slug']) or a.get('image') or (pick_products(a['tags'][:2], 1) or [P[0]])[0]['img_lg']
             more = pick_products(a['tags'][:1], 4)
             faqs = []
             fm = re.search(r'<h2[^>]*>(?:Frequently asked questions|Preguntas frecuentes)</h2>(.*)$', content, re.S)
@@ -877,6 +900,7 @@ def main():
         shutil.rmtree(OUT)
     os.makedirs(OUT)
     articles = load_articles()
+    assign_article_images(articles)
     home(articles)
     spanish_home(articles)
     shop_page()
