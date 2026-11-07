@@ -29,6 +29,8 @@ load = lambda n: json.load(open(os.path.join(ROOTDIR, 'data', n)))
 P = load('products.json')
 REVIEWS = load('reviews.json')
 SHOP = load('shop.json')
+_VER = load('site_verification.json') if os.path.exists(os.path.join(ROOTDIR, 'data', 'site_verification.json')) else {}
+VERIFY_META = ''.join(f'<meta name="{k}" content="{v}">\n' for k, v in _VER.get('meta', {}).items())
 FEATURES = load('colour_features.json')['features'] if os.path.exists(os.path.join(ROOTDIR, 'data', 'colour_features.json')) else {}
 BYID = {p['id']: p for p in P}
 COL = {c[0]: {'slug': c[0], 'label': c[1], 'hex': c[2]} for c in COLOURS}
@@ -139,7 +141,7 @@ def page(path, title, desc, body, *, schema=None, og_image=None, lang='en', alte
 <meta name="description" content="{e(desc)}">
 <link rel="canonical" href="{url}">
 {'<meta name="robots" content="noindex, follow">' if noindex else '<meta name="robots" content="index, follow, max-image-preview:large">'}
-{alt}<meta property="og:type" content="{og_type}">
+{alt}{VERIFY_META if path in ('index.html',) else ''}<meta property="og:type" content="{og_type}">
 <meta property="og:site_name" content="{BRAND}">
 <meta property="og:title" content="{e(title)}">
 <meta property="og:description" content="{e(desc)}">
@@ -851,6 +853,9 @@ def static_files(articles):
                'icons': [{'src': '/assets/favicon.svg', 'sizes': 'any', 'type': 'image/svg+xml'}]}, open(os.path.join(OUT, 'site.webmanifest'), 'w'))
     if PREVIEW:
         return
+    ver = load('site_verification.json') if os.path.exists(os.path.join(ROOTDIR, 'data', 'site_verification.json')) else {}
+    for fn, body in ver.get('files', {}).items():
+        open(os.path.join(OUT, fn), 'w').write(body)
     if SHOP.get('indexnow_key'):  # IndexNow ownership file (Bing, Yandex, Seznam, Naver)
         open(os.path.join(OUT, SHOP['indexnow_key'] + '.txt'), 'w').write(SHOP['indexnow_key'])
     open(os.path.join(OUT, 'CNAME'), 'w').write('digipodstudio.com\n')

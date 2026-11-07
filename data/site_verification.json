@@ -1,0 +1,7 @@
+{
+ "note": "Search-engine ownership checks. 'files' are written to the site root as-is; 'meta' become <meta> tags in the home page head. Never remove an entry while the console account is in use.",
+ "files": {
+  "yandex_fae8f4f17f43e973.html": "<html>\n<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n</head>\n<body>Verification: fae8f4f17f43e973</body>\n</html>\n"
+ },
+ "meta": {}
+}
