@@ -35,9 +35,15 @@ if not urls:
     print('IndexNow: nothing changed')
     sys.exit(0)
 body = json.dumps({'host': 'digipodstudio.com', 'key': key, 'keyLocation': f'{SITE}/{key}.txt', 'urlList': urls}).encode()
-req = urllib.request.Request('https://api.indexnow.org/indexnow', data=body, headers={'Content-Type': 'application/json; charset=utf-8'})
-try:
-    with urllib.request.urlopen(req, timeout=30) as r:
-        print(f'IndexNow: sent {len(urls)} URLs, response {r.status}')
-except urllib.error.HTTPError as e:
-    print(f'IndexNow: sent {len(urls)} URLs, response {e.code} {e.reason}')  # 202 = accepted, key check pending
+import time
+for attempt in range(3):  # the key file can take a minute to appear after a deploy
+    req = urllib.request.Request('https://api.indexnow.org/indexnow', data=body, headers={'Content-Type': 'application/json; charset=utf-8'})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            print(f'IndexNow: sent {len(urls)} URLs, response {r.status} (200/202 = accepted)')
+            break
+    except urllib.error.HTTPError as e:
+        print(f'IndexNow: attempt {attempt + 1}, response {e.code} {e.reason}')
+        if e.code not in (403, 429) or attempt == 2:
+            break
+        time.sleep(90)

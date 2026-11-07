@@ -31,5 +31,5 @@ jobs:
         env:
           COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
-          sleep 30
+          sleep 60
           if printf '%s' "$COMMIT_MSG" | grep -q "\[indexnow all\]"; then python3 tools/indexnow.py all; else python3 tools/indexnow.py changed; fi
