@@ -54,6 +54,10 @@ One article a day from `data/content-calendar.json`. Rules for every article:
 
 After every deploy, GitHub Actions runs `tools/indexnow.py`, which sends the pages that changed in that commit to IndexNow. Put `[indexnow all]` in a commit message to resend every page in the sitemap. The key file is `site/<indexnow_key>.txt` (key in `data/shop.json`).
 
+## Social accounts
+
+`SOCIAL` in `tools/build.py` lists every official account (Instagram @digipodquenci and @digipodceleb, Facebook Quince and Celebrations Pages, Pinterest digipodquenci). It feeds the home page "Follow along" cards, the footer icons and the Organization `sameAs` schema. Add or remove an account there and rebuild. The Celebrations Pinterest account (digipodceleb) is left out while it is suspended.
+
 ## Links
 
 All Buy buttons use Etsy's Share & Save format (`digipodstudio.etsy.com/listing/<ID>`).

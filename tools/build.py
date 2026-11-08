@@ -23,11 +23,19 @@ OUT = os.path.join(ROOTDIR, 'preview' if PREVIEW else 'site')
 SITE = 'https://digipodstudio.com'
 BRAND = 'Digipod Studio'
 ETSY_SHOP = 'https://www.etsy.com/shop/DigipodStudio'
-SOCIAL = [  # official DigipodStudio social pages (shown in the footer and in Organization sameAs)
-    ('Facebook · Celebrations', 'https://www.facebook.com/digipodstudiocelebrations'),
-    ('Facebook · Quince & Sweet 16', 'https://www.facebook.com/digipodstudioquince'),
+SOCIAL = [  # official DigipodStudio social accounts (home "Follow" section, footer, Organization sameAs)
+    {'net': 'instagram', 'brand': 'quince', 'handle': '@digipodquenci', 'name': 'Quinceañera & Sweet 16', 'url': 'https://www.instagram.com/digipodquenci/'},
+    {'net': 'instagram', 'brand': 'celeb', 'handle': '@digipodceleb', 'name': 'Celebrations', 'url': 'https://www.instagram.com/digipodceleb/'},
+    {'net': 'facebook', 'brand': 'quince', 'handle': 'DigipodStudio Quince & Sweet 16', 'short': 'Quince & Sweet 16', 'sub': 'DigipodStudio Page', 'name': 'Quinceañera & Sweet 16', 'url': 'https://www.facebook.com/digipodstudioquince'},
+    {'net': 'facebook', 'brand': 'celeb', 'handle': 'DigipodStudio Celebrations', 'short': 'Celebrations', 'sub': 'DigipodStudio Page', 'name': 'Celebrations', 'url': 'https://www.facebook.com/digipodstudiocelebrations'},
+    {'net': 'pinterest', 'brand': 'quince', 'handle': 'digipodquenci', 'name': 'Quinceañera & Sweet 16', 'url': 'https://www.pinterest.com/digipodquenci/'},
 ]
-FB_ICON = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor"><path d="M13.5 22v-8h2.7l.4-3.2h-3.1V8.8c0-.9.3-1.6 1.6-1.6h1.7V4.4c-.3 0-1.3-.1-2.5-.1-2.4 0-4.1 1.5-4.1 4.2v2.3H7.5V14h2.7v8h3.3z"/></svg>'
+NET_NAME = {'instagram': 'Instagram', 'facebook': 'Facebook', 'pinterest': 'Pinterest'}
+NET_ICON = {  # simple line icons, coloured by CSS
+    'instagram': '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r=".6" fill="currentColor"/></svg>',
+    'facebook': '<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M13.5 22v-8h2.7l.4-3.2h-3.1V8.8c0-.9.3-1.6 1.6-1.6h1.7V4.4c-.3 0-1.3-.1-2.5-.1-2.4 0-4.1 1.5-4.1 4.2v2.3H7.5V14h2.7v8h3.3z"/></svg>',
+    'pinterest': '<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12.2 2C6.7 2 4 5.9 4 9.2c0 2 .8 3.8 2.4 4.4.3.1.5 0 .6-.3l.2-.9c.1-.3 0-.4-.2-.7-.5-.6-.8-1.3-.8-2.4 0-3.1 2.3-5.8 6-5.8 3.3 0 5.1 2 5.1 4.7 0 3.5-1.6 6.5-3.9 6.5-1.3 0-2.2-1-1.9-2.3.4-1.5 1.1-3.2 1.1-4.3 0-1-.5-1.8-1.6-1.8-1.3 0-2.3 1.3-2.3 3.1 0 1.1.4 1.9.4 1.9l-1.5 6.5c-.4 1.9-.1 4.3 0 4.5 0 .1.2.2.3.1.1-.2 1.6-2 2.1-3.8l.8-3.2c.4.8 1.6 1.4 2.9 1.4 3.8 0 6.4-3.5 6.4-8.1C20.6 5.3 17.3 2 12.2 2z"/></svg>',
+}
 TODAY = datetime.date.today()
 
 load = lambda n: json.load(open(os.path.join(ROOTDIR, 'data', n)))
@@ -191,7 +199,11 @@ def page(path, title, desc, body, *, schema=None, og_image=None, lang='en', alte
 
 def footer(es=False):
     occ = ''.join(f'<li><a href="@/{o}/">{OCC_NAME[o]}</a></li>' for o in OCC_ORDER)
-    social = ''.join(f'<a href="{u}" rel="noopener" target="_blank">{FB_ICON}<span>{n.split(" · ")[1]}</span></a>' for n, u in SOCIAL)
+    def soc_row(brand, label):
+        links = ''.join(f'<a class="soc-dot soc-{a["net"]}" href="{a["url"]}" rel="noopener" target="_blank" aria-label="{NET_NAME[a["net"]]}: {e(a["handle"])}" title="{NET_NAME[a["net"]]}">{NET_ICON[a["net"]]}</a>'
+                        for a in SOCIAL if a['brand'] == brand)
+        return f'<span class="foot-soc-row"><span class="foot-soc-l">{label}</span>{links}</span>'
+    social = soc_row('quince', 'Quinceañera &amp; Sweet 16') + soc_row('celeb', 'Celebraciones' if es else 'Celebrations')
     cols = ''.join(f'<li><a href="@/colors/{c}/">{COL[c]["label"]}</a></li>' for c in ['pink', 'champagne', 'blue', 'red', 'green', 'purple'])
     return f'''<footer class="foot"><div class="wrap">
 <div class="foot-grid">
@@ -274,7 +286,7 @@ def faq_schema(faqs):
 
 
 ORG = {'@context': 'https://schema.org', '@type': 'Organization', 'name': BRAND, 'url': SITE,
-       'logo': SITE + '/assets/favicon.svg', 'sameAs': [ETSY_SHOP] + [u for _, u in SOCIAL]}
+       'logo': SITE + '/assets/favicon.svg', 'sameAs': [ETSY_SHOP] + [a['url'] for a in SOCIAL]}
 
 
 # ---------------------------------------------------------------- matching sets
@@ -361,6 +373,30 @@ def render_article_body(md_text):
 
 
 # ---------------------------------------------------------------- pages
+SOCIAL_POINTS = {
+    'instagram': ['Our newest designs and best sellers', 'Color and theme ideas for the party', 'Message us the word DIGIPOD for the shop link'],
+    'facebook': ['Two featured designs every morning', 'Planning guides from our journal', 'Questions? Message us on Messenger'],
+    'pinterest': ['Boards for quinceañera slideshows, save the dates and invitations', 'Every new planning article, pinned', 'Save designs to plan the party together'],
+}
+
+
+def social_section():
+    """Home page "Follow along" cards: one card per network, one follow row per account."""
+    cards = ''
+    for i, net in enumerate(['instagram', 'facebook', 'pinterest']):
+        accts = [a for a in SOCIAL if a['net'] == net]
+        rows = ''.join(f'<a class="soc-acct" href="{a["url"]}" rel="noopener" target="_blank">'
+                       f'<span class="soc-who"><b>{e(a.get("short", a["handle"]))}</b><small>{e(a.get("sub", a["name"]))}</small></span>'
+                       f'<span class="soc-follow">{"Like" if net == "facebook" else "Follow"}<span class="sr"> {e(a["handle"])} on {NET_NAME[net]}</span></span></a>' for a in accts)
+        pts = ''.join(f'<li>{e(t)}</li>' for t in SOCIAL_POINTS[net])
+        cards += (f'<article class="soc-card soc-{net}" data-reveal style="--d:{i * .12:.2f}s"><span class="soc-ico">{NET_ICON[net]}</span>'
+                  f'<h3>{NET_NAME[net]}</h3><ul class="soc-points">{pts}</ul><div class="soc-accts">{rows}</div></article>')
+    return f'''<section class="sec dark soc-sec" aria-labelledby="soc-h"><div class="glow g1" aria-hidden="true"></div><div class="wrap">
+<div class="sec-head" data-reveal><div><h2 id="soc-h" style="color:var(--pearl)">Follow along</h2><p class="muted">New designs, color ideas and planning guides on your feed, for quinceañeras, sweet 16s and every celebration.</p></div></div>
+<div class="soc-grid">{cards}</div>
+</div></section>'''
+
+
 def home(articles):
     best = sorted([p for p in P if p['best']], key=lambda p: p['best'])[:12]
     sw = ''.join(f'<li><button class="swatch" type="button" data-colour="{c}" aria-pressed="false" style="--c:{COL[c]["hex"]}"><i></i>{e(COL[c]["label"])}</button></li>'
@@ -452,6 +488,7 @@ def home(articles):
 <div class="posts">{posts}</div>
 </div></section>
 
+{social_section()}
 <section class="sec band" aria-labelledby="faq-h"><div class="wrap">
 <h2 id="faq-h">Questions before you order</h2>
 {faq_html(GENERAL_FAQ)}
