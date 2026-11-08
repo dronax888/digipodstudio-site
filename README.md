@@ -57,3 +57,8 @@ After every deploy, GitHub Actions runs `tools/indexnow.py`, which sends the pag
 ## Links
 
 All Buy buttons use Etsy's Share & Save format (`digipodstudio.etsy.com/listing/<ID>`).
+
+## Facebook daily product posts
+
+`social/facebook-daily-posts.json` holds the ready-made Facebook posts (English) for both Pages, best sellers first: Quince Page (quinceañera & sweet 16 products) and Celebrations Page (all other occasions). Two posts per Page per day at fixed New York times. The daily scheduled task "DigipodStudio daily Facebook product posts" reads this file and schedules the next days in Metricool. Rebuild the file after product changes with `python3 social/make_fb_posts.py .` (keep the start date so the order does not jump).
+
