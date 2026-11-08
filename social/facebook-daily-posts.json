@@ -1,14 +1,14 @@
 {
- "note": "Daily Facebook product posts (2 per Page per day), best sellers first. Rule: for date D in America/New_York, k = days since start_date; slot s (0,1) posts item index (2k+s) mod N of that Page list, at times[s]. After the last item the list starts again from the top. Regenerate with: python3 social/make_fb_posts.py . (keeps start_date). English only.",
+ "note": "Daily Facebook product posts (2 per Page per day), best sellers first. Rule: for date D in Asia/Manila (early morning posts so people in the Philippines see them when they wake up), k = days since start_date; slot s (0,1) posts item index (2k+s) mod N of that Page list, at times[s]. After the last item the list starts again from the top. Regenerate with: python3 social/make_fb_posts.py . (keeps start_date). English only.",
  "start_date": "2026-11-09",
- "timezone": "America/New_York",
+ "timezone": "Asia/Manila",
  "pages": {
   "quince": {
    "name": "DigipodStudio Quince",
    "blogId": "7939713",
    "times": [
-    "10:00",
-    "19:00"
+    "06:00",
+    "07:30"
    ],
    "posts": [
     {
@@ -1717,8 +1717,8 @@
    "name": "DigipodStudio Celebrations",
    "blogId": "7939651",
    "times": [
-    "11:00",
-    "20:00"
+    "06:15",
+    "07:45"
    ],
    "posts": [
     {

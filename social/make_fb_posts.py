@@ -134,11 +134,11 @@ def post(p, i):
             'alt': (alts.get(p['id'], {}).get('alt') or p['name']).replace('May include: ', ''),
             'caption': caption(p, i, rk.get(p['id'], 9999) < 30)}
 out = {
-  'note': 'Daily Facebook product posts (2 per Page per day), best sellers first. Rule: for date D in America/New_York, k = days since start_date; slot s (0,1) posts item index (2k+s) mod N of that Page list, at times[s]. After the last item the list starts again from the top. Regenerate with: python3 social/make_fb_posts.py . (keeps start_date). English only.',
-  'start_date': START, 'timezone': 'America/New_York',
+  'note': 'Daily Facebook product posts (2 per Page per day), best sellers first. Rule: for date D in Asia/Manila (early morning posts so people in the Philippines see them when they wake up), k = days since start_date; slot s (0,1) posts item index (2k+s) mod N of that Page list, at times[s]. After the last item the list starts again from the top. Regenerate with: python3 social/make_fb_posts.py . (keeps start_date). English only.',
+  'start_date': START, 'timezone': 'Asia/Manila',
   'pages': {
-    'quince': {'name': 'DigipodStudio Quince', 'blogId': '7939713', 'times': ['10:00', '19:00'], 'posts': [post(p, i) for i, p in enumerate(Q)]},
-    'celebrations': {'name': 'DigipodStudio Celebrations', 'blogId': '7939651', 'times': ['11:00', '20:00'], 'posts': [post(p, i) for i, p in enumerate(C)]},
+    'quince': {'name': 'DigipodStudio Quince', 'blogId': '7939713', 'times': ['06:00', '07:30'], 'posts': [post(p, i) for i, p in enumerate(Q)]},
+    'celebrations': {'name': 'DigipodStudio Celebrations', 'blogId': '7939651', 'times': ['06:15', '07:45'], 'posts': [post(p, i) for i, p in enumerate(C)]},
   }}
 json.dump(out, open(f'{repo}/social/facebook-daily-posts.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 print(len(Q), len(C))

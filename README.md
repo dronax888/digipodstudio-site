@@ -60,5 +60,5 @@ All Buy buttons use Etsy's Share & Save format (`digipodstudio.etsy.com/listing/
 
 ## Facebook daily product posts
 
-`social/facebook-daily-posts.json` holds the ready-made Facebook posts (English) for both Pages, best sellers first: Quince Page (quinceañera & sweet 16 products) and Celebrations Page (all other occasions). Two posts per Page per day at fixed New York times. The daily scheduled task "DigipodStudio daily Facebook product posts" reads this file and schedules the next days in Metricool. Rebuild the file after product changes with `python3 social/make_fb_posts.py .` (keep the start date so the order does not jump).
+`social/facebook-daily-posts.json` holds the ready-made Facebook posts (English) for both Pages, best sellers first: Quince Page (quinceañera & sweet 16 products) and Celebrations Page (all other occasions). Two posts per Page per day, early morning Manila time (Quince 06:00 and 07:30, Celebrations 06:15 and 07:45); the daily article share goes out between them (Quince 07:00, Celebrations 06:45). The daily scheduled task "DigipodStudio daily Facebook product posts" reads this file and schedules the next days in Metricool. Rebuild the file after product changes with `python3 social/make_fb_posts.py .` (keep the start date so the order does not jump).
 
