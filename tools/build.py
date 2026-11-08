@@ -387,7 +387,7 @@ def social_section():
         accts = [a for a in SOCIAL if a['net'] == net]
         rows = ''.join(f'<a class="soc-acct" href="{a["url"]}" rel="noopener" target="_blank">'
                        f'<span class="soc-who"><b>{e(a.get("short", a["handle"]))}</b><small>{e(a.get("sub", a["name"]))}</small></span>'
-                       f'<span class="soc-follow">{"Like" if net == "facebook" else "Follow"}<span class="sr"> {e(a["handle"])} on {NET_NAME[net]}</span></span></a>' for a in accts)
+                       f'<span class="soc-follow">Follow<span class="sr"> {e(a["handle"])} on {NET_NAME[net]}</span></span></a>' for a in accts)
         pts = ''.join(f'<li>{e(t)}</li>' for t in SOCIAL_POINTS[net])
         cards += (f'<article class="soc-card soc-{net}" data-reveal style="--d:{i * .12:.2f}s"><span class="soc-ico">{NET_ICON[net]}</span>'
                   f'<h3>{NET_NAME[net]}</h3><ul class="soc-points">{pts}</ul><div class="soc-accts">{rows}</div></article>')
