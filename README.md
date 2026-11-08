@@ -58,6 +58,8 @@ After every deploy, GitHub Actions runs `tools/indexnow.py`, which sends the pag
 
 `SOCIAL` in `tools/build.py` lists every official account (Instagram @digipodquenci and @digipodceleb, Facebook Quince and Celebrations Pages, Pinterest digipodquenci). It feeds the home page "Follow along" cards, the footer icons and the Organization `sameAs` schema. Add or remove an account there and rebuild. The Celebrations Pinterest account (digipodceleb) is left out while it is suspended.
 
+Logo rules (Meta and Pinterest brand guidelines): use the official logo shapes in `NET_ICON` only. Facebook = full blue circle with white f (#0866FF), never the f alone, never recoloured or outlined. Pinterest = red badge (#E60023) with white P, never recoloured. Instagram = glyph in one solid colour (white on our dark backgrounds). No borders or frames around the logos, keep clear space around them, and always pair them with a call to action (Follow).
+
 ## Links
 
 All Buy buttons use Etsy's Share & Save format (`digipodstudio.etsy.com/listing/<ID>`).
