@@ -43,7 +43,7 @@ One article a day from `data/content-calendar.json`. Rules for every article:
 3. At least two `[[products: <tags> | 3]]` blocks, and 2 or more links to other pages on the site (planner, related articles, collections).
 4. Ends with `## Frequently asked questions` (or `## Preguntas frecuentes`) with 2 to 4 `###` questions. These become FAQ rich results.
 5. No invented statistics, prices or quotes. Never quote song lyrics. Only general, widely accepted advice.
-6. Spanish articles are written natively in Spanish (US Latino audience), not translated word for word.
+6. English only. From 8 Nov 2026 every new article, title, caption and hashtag is in English (no Spanish articles, no ¿ or ¡ in captions). The Spanish pages already published stay online.
 7. The first tag must be the occasion slug (e.g. `quinceanera-sweet-16`). It decides which occasion feed the article goes into.
 
 ## RSS feeds (Pinterest auto-publish)
