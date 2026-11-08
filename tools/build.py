@@ -903,10 +903,26 @@ def static_files(articles):
         sm.append(f'<url><loc>{u}</loc><lastmod>{TODAY.isoformat()}</lastmod><priority>{pr}</priority></url>')
     sm.append('</urlset>')
     open(os.path.join(OUT, 'sitemap.xml'), 'w').write('\n'.join(sm))
-    items = ''.join(f'<item><title>{e(a["title"])}</title><link>{SITE}/{a["path"]}</link><guid>{SITE}/{a["path"]}</guid>'
-                    f'<pubDate>{a["date"].strftime("%a, %d %b %Y")} 08:00:00 +0000</pubDate><description>{e(a["description"])}</description></item>' for a in articles[:30])
-    open(os.path.join(OUT, 'feed.xml'), 'w').write(f'<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>{BRAND} Journal</title>'
-                                                   f'<link>{SITE}/journal/</link><description>Planning ideas for quinceañeras, weddings and birthdays.</description>{items}</channel></rss>')
+    # RSS feeds. Each item carries its hero image (enclosure + media:content) so Pinterest auto-publish can pin it.
+    # feed.xml = every article; feeds/<occasion>.xml = one occasion only (one Pinterest board per feed).
+    def art_img(a):
+        return ART_IMG.get(a['slug']) or a.get('image') or (pick_products(a['tags'][:2], 1) or [P[0]])[0]['img_lg']
+
+    def rss(arts, title, link, desc):
+        items = ''.join(f'<item><title>{e(a["title"])}</title><link>{SITE}/{a["path"]}</link><guid>{SITE}/{a["path"]}</guid>'
+                        f'<pubDate>{a["date"].strftime("%a, %d %b %Y")} 08:00:00 +0000</pubDate><description>{e(a["description"])}</description>'
+                        f'<enclosure url="{e(art_img(a))}" length="0" type="image/jpeg"/><media:content url="{e(art_img(a))}" medium="image"/></item>'
+                        for a in arts[:30])
+        return (f'<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title>{e(title)}</title>'
+                f'<link>{link}</link><description>{e(desc)}</description>{items}</channel></rss>')
+
+    open(os.path.join(OUT, 'feed.xml'), 'w').write(rss(articles, f'{BRAND} Journal', f'{SITE}/journal/',
+                                                       'Planning ideas for quinceañeras, weddings and birthdays.'))
+    os.makedirs(os.path.join(OUT, 'feeds'), exist_ok=True)
+    for occ in OCC_ORDER:
+        arts = [a for a in articles if occ in a['tags']]
+        open(os.path.join(OUT, 'feeds', occ + '.xml'), 'w').write(rss(arts, f'{BRAND} Journal: {OCC_NAME.get(occ, occ)}', f'{SITE}/journal/',
+                                                                      f'{OCC_NAME.get(occ, occ)} planning ideas from {BRAND}.'))
 
 
 def main():

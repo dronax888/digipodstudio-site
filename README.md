@@ -44,6 +44,11 @@ One article a day from `data/content-calendar.json`. Rules for every article:
 4. Ends with `## Frequently asked questions` (or `## Preguntas frecuentes`) with 2 to 4 `###` questions. These become FAQ rich results.
 5. No invented statistics, prices or quotes. Never quote song lyrics. Only general, widely accepted advice.
 6. Spanish articles are written natively in Spanish (US Latino audience), not translated word for word.
+7. The first tag must be the occasion slug (e.g. `quinceanera-sweet-16`). It decides which occasion feed the article goes into.
+
+## RSS feeds (Pinterest auto-publish)
+
+`site/feed.xml` lists every article; `site/feeds/<occasion>.xml` lists one occasion only. Every item carries its hero image so Pinterest can pin it. Pinterest (account digipodquenci, Settings > Bulk create Pins > Auto-publish) reads `https://digipodstudio.com/feeds/quinceanera-sweet-16.xml` and pins each new quinceañera article to the board "Quinceañera Planning Ideas" within about a day. Keep these URLs stable.
 
 ## IndexNow (instant ping to Bing and others)
 
