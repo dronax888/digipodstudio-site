@@ -313,7 +313,7 @@ SETS = build_sets()
 
 def set_html(s):
     c = COL[s['colour']]
-    imgs = ''.join(f'<a href="@/templates/{p["slug"]}/" tabindex="-1" aria-hidden="true"><img loading="lazy" src="{p["img"]}" alt=""></a>' for p in s['pieces'][:3])
+    imgs = ''.join(f'<a href="@/templates/{p["slug"]}/" tabindex="-1" aria-hidden="true"><img loading="lazy" src="{p["img"]}" alt="{e(p["name"])}"></a>' for p in s['pieces'][:3])
     rows = ''.join(f'<li><a href="@/templates/{p["slug"]}/">{e(p["type_name"].rstrip("s") if p["type_name"].endswith("s") else p["type_name"])}</a><span>{money(p["price"])}</span></li>' for p in s['pieces'])
     total = sum(p['price'] for p in s['pieces'])
     return (f'<article class="set" data-reveal><div class="set-imgs">{imgs}</div><h3><span class="dot" style="background:{c["hex"]}"></span>{e(c["label"])}</h3>'
@@ -421,7 +421,7 @@ def home(articles):
     occ_tiles = ''
     for o in OCC_ORDER:
         ps = sorted([p for p in P if p['occasion'] == o], key=rank)
-        occ_tiles += (f'<a class="occ" data-reveal href="@/{o}/"><img loading="lazy" src="{ps[0]["img_lg"]}" alt=""><div><h3>{OCC_NAME[o]}</h3>'
+        occ_tiles += (f'<a class="occ" data-reveal href="@/{o}/"><img loading="lazy" src="{ps[0]["img_lg"]}" alt="{e(ps[0]["name"])}"><div><h3>{OCC_NAME[o]}</h3>'
                       f'<p>{OCCASION_COPY[o]["blurb"]}, {len(ps)} design{"s" if len(ps) != 1 else ""}</p></div></a>')
     revs = ''.join(review_html(r) for r in REVIEWS[:10])
     posts = ''.join(post_card(a) for a in [a for a in articles if a['lang'] == 'en'][:3])
@@ -576,7 +576,7 @@ def assign_article_images(articles):
 
 def post_card(a):
     img = ART_IMG.get(a['slug']) or a.get('image') or (pick_products(a['tags'][:1], 1) or [P[0]])[0]['img_lg']
-    return (f'<article class="post" data-reveal><a class="cover" href="@/{a["path"]}" tabindex="-1" aria-hidden="true"><img loading="lazy" src="{img}" alt=""></a>'
+    return (f'<article class="post" data-reveal><a class="cover" href="@/{a["path"]}" tabindex="-1" aria-hidden="true"><img loading="lazy" src="{img}" alt="{e(a["title"])}"></a>'
             f'<h3><a href="@/{a["path"]}">{e(a["title"])}</a></h3><p>{e(a["description"])}</p></article>')
 
 
@@ -795,7 +795,7 @@ def journal_pages(articles):
             dt = a['date'].strftime('%d de %B de %Y') if es else a['date'].strftime('%B %-d, %Y')
             body = f'''{nav}<article class="wrap"><div class="article">
 <header><h1>{e(a["title"])}</h1><p class="byline">{'Por' if es else 'By'} Digipod Studio, <time datetime="{a["date"].isoformat()}">{dt}</time></p></header>
-<div class="hero-img"><img src="{img}" alt="" fetchpriority="high"></div>
+<div class="hero-img"><img src="{img}" alt="{e(a["title"])}" fetchpriority="high"></div>
 {toc}<div class="prose">{content}</div>
 </div></article>
 {signup_box(es)}
