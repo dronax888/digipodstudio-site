@@ -43,6 +43,10 @@ P = load('products.json')
 REVIEWS = load('reviews.json')
 SHOP = load('shop.json')
 _VER = load('site_verification.json') if os.path.exists(os.path.join(ROOTDIR, 'data', 'site_verification.json')) else {}
+_AN = load('analytics.json') if os.path.exists(os.path.join(ROOTDIR, 'data', 'analytics.json')) else {}
+TRACKING = ('<script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");'
+            'c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,'
+            'b.appendChild(c)}loadScript(function(){beTracker.t({hash:"' + _AN['metricool_hash'] + '"})});</script>\n') if _AN.get('metricool_hash') else ''
 VERIFY_META = ''.join(f'<meta name="{k}" content="{v}">\n' for k, v in _VER.get('meta', {}).items())
 FEATURES = load('colour_features.json')['features'] if os.path.exists(os.path.join(ROOTDIR, 'data', 'colour_features.json')) else {}
 BYID = {p['id']: p for p in P}
@@ -172,7 +176,7 @@ def page(path, title, desc, body, *, schema=None, og_image=None, lang='en', alte
 <link rel="preconnect" href="https://i.etsystatic.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&family=Instrument+Sans:wght@400..700&display=swap">
 <link rel="stylesheet" href="@/assets/site.css?v={ASSET_V}">
-{sch}</head>
+{sch}{TRACKING}</head>
 <body data-page="{body_page}">
 <a class="skip" href="#main">{'Ir al contenido' if es else 'Skip to content'}</a>
 <header class="top"><div class="wrap">
