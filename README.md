@@ -46,6 +46,12 @@ One article a day from `data/content-calendar.json`. Rules for every article:
 6. English only. From 8 Nov 2026 every new article, title, caption and hashtag is in English (no Spanish articles, no ¿ or ¡ in captions). The Spanish pages already published stay online.
 7. The first tag must be the occasion slug (e.g. `quinceanera-sweet-16`). It decides which occasion feed the article goes into.
 
+## Sitemap dates and internal links (SEO, 11 Nov 2026)
+
+- `data/page_dates.json` stores, for every page, a fingerprint of its HTML and the day it last really changed. The build uses it for `<lastmod>` in the sitemap, so Google sees true update dates instead of "today" on every page. Commit it with each build; never edit it by hand.
+- Articles link to each other ("Keep reading"), occasion and type pages show the latest matching articles ("Planning guides"), and product pages show 2 matching articles chosen oldest-first so they stay stable as new articles are published.
+- Product page titles keep "(Design N)" when shortened, so similar designs never share a title.
+
 ## RSS feeds (Pinterest auto-publish)
 
 `site/feed.xml` lists every article; `site/feeds/<occasion>.xml` lists one occasion only. Every item carries its hero image so Pinterest can pin it. Pinterest (account digipodquenci, Settings > Bulk create Pins > Auto-publish) reads `https://digipodstudio.com/feeds/quinceanera-sweet-16.xml` and pins each new quinceañera article to the board "Quinceañera Planning Ideas" within about a day. Keep these URLs stable.

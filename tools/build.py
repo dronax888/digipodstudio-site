@@ -578,6 +578,30 @@ def assign_article_images(articles):
         ART_IMG[a['slug']] = pick['img_lg']
 
 
+ARTS = []  # all published articles, set in main()
+
+
+def guides_for(tags, n=3, lang='en', exclude=None, stable=False):
+    """Articles sharing the most tags with `tags`. stable=True keeps the oldest matches first, so the
+    pick does not change every time a new article is published (used on the 243 product pages)."""
+    pool = [a for a in ARTS if a['lang'] == lang and a['slug'] != exclude]
+    scored = [(len(set(tags) & set(a['tags'])), a) for a in pool]
+    scored = [x for x in scored if x[0] > 0 and (not tags or tags[0] in x[1]['tags'])]
+    if stable:
+        scored.sort(key=lambda x: (-x[0], x[1]['date'], x[1]['slug']))
+    else:
+        scored.sort(key=lambda x: (-x[0], -x[1]['date'].toordinal(), x[1]['slug']))
+    return [a for _, a in scored[:n]]
+
+
+def guides_section(arts, heading='Planning guides', link=True):
+    if not arts:
+        return ''
+    more = '<a class="textlink" href="@/journal/">All articles</a>' if link else ''
+    return (f'<section class="sec"><div class="wrap"><div class="sec-head"><h2>{e(heading)}</h2>{more}</div>'
+            f'<div class="posts">{"".join(post_card(a) for a in arts)}</div></div></section>')
+
+
 def post_card(a):
     img = ART_IMG.get(a['slug']) or a.get('image') or (pick_products(a['tags'][:1], 1) or [P[0]])[0]['img_lg']
     return (f'<article class="post" data-reveal><a class="cover" href="@/{a["path"]}" tabindex="-1" aria-hidden="true"><img loading="lazy" src="{img}" alt="{e(a["title"])}"></a>'
@@ -606,7 +630,7 @@ def occasion_pages():
         tn = {p['type']: p['type_name'] for p in items}
         chips = '<ul class="chips">' + ''.join(f'<li><a href="@/{o}/{t}/">{e(tn[t])} ({sum(1 for p in items if p["type"] == t)})</a></li>' for t in types) + '</ul>'
         faqs = [f for t in types[:3] for f in TYPE_COPY[t]['faq'][:1]] + GENERAL_FAQ[:2]
-        extra = f'<section class="sec"><div class="wrap"><h2>Good to know</h2>{faq_html(faqs)}</div></section>'
+        extra = f'<section class="sec"><div class="wrap"><h2>Good to know</h2>{faq_html(faqs)}</div></section>' + guides_section(guides_for([o]))
         listing_page(f'{o}/index.html', c['title'] + ' | Digipod Studio', c['desc'], c['h1'], c['intro'], items,
                      [('', 'Home'), (None, OCC_NAME[o])], chips, extra, [faq_schema(faqs)], priority='0.9')
         for t in types:
@@ -617,7 +641,8 @@ def occasion_pages():
             tc = TYPE_COPY[t]
             intro = f'{tc["what"]} {tc["use"]}'
             chips2 = '<ul class="chips">' + ''.join(f'<li><a href="@/{o}/{t2}/"{" aria-current=page" if t2 == t else ""}>{e(tn[t2])}</a></li>' for t2 in types) + '</ul>'
-            extra = f'<section class="sec"><div class="wrap"><h2>Questions about {e(tn[t].lower())}</h2>{faq_html(tc["faq"])}</div></section>'
+            extra = (f'<section class="sec"><div class="wrap"><h2>Questions about {e(tn[t].lower())}</h2>{faq_html(tc["faq"])}</div></section>'
+                     + guides_section(guides_for([o, t])))
             listing_page(f'{o}/{t}/index.html', f'{h1} Templates, Editable in Canva | Digipod Studio',
                          f'{len(sub)} editable {h1.lower()} templates. {tc["what"]}'[:158], h1 + ' templates', intro, sub,
                          [('', 'Home'), (f'{o}/', OCC_NAME[o]), (None, tn[t])], chips2, extra, [faq_schema(tc['faq'])])
@@ -684,6 +709,18 @@ def shop_page():
          body, schema=[bc], body_page='shop', priority='0.9')
 
 
+def short_title(name, limit):
+    """Shorten a product name at a word boundary but keep its '(Design N)' or trailing number, so
+    designs of the same product never end up with the same, half-cut title."""
+    m = re.search(r'\s*(\(Design \d+\)|\d+)$', name)
+    tail = (' ' + m.group(1)) if m else ''
+    base = name[:m.start()] if m else name
+    room = limit - len(tail)
+    if len(base) > room:
+        base = base[:room + 1].rsplit(' ', 1)[0].rstrip(' ,-&|')
+    return base + tail
+
+
 def product_pages():
     for p in P:
         tc = TYPE_COPY[p['type']]
@@ -744,19 +781,21 @@ def product_pages():
 <h2>Questions</h2>{faq_html(faqs)}
 </div></div>
 <div class="sticky-buy"><span><strong>{money(p["price"])}</strong></span><a class="btn btn-primary" href="{p["url"]}" rel="noopener">Buy on Etsy</a></div>
-{look}{rel_html}'''
+{look}{rel_html}{guides_section(guides_for([o, p['type']] + p['colours'][:1], 2, stable=True), f'Planning a {p["occasion_short"].lower()}?' if o != 'party-extras' else 'Planning guides')}'''
         schema = {'@context': 'https://schema.org', '@type': 'Product', 'name': p['name'], 'image': [p['img_lg']], 'sku': p['no'],
                   'description': f'{tc["what"]} {tc["use"]}', 'brand': {'@type': 'Brand', 'name': BRAND},
                   'category': f'{p["occasion_name"]} > {p["type_name"]}',
                   'offers': {'@type': 'Offer', 'price': f'{p["price"]:.2f}', 'priceCurrency': 'USD', 'availability': 'https://schema.org/InStock',
                              'url': p['url'], 'seller': {'@type': 'Organization', 'name': BRAND},
+                             'hasMerchantReturnPolicy': {'@type': 'MerchantReturnPolicy', 'applicableCountry': 'US',
+                                                         'returnPolicyCategory': 'https://schema.org/MerchantReturnNotPermitted'},
                              'shippingDetails': {'@type': 'OfferShippingDetails', 'shippingRate': {'@type': 'MonetaryAmount', 'value': '0', 'currency': 'USD'},
                                                  'shippingDestination': {'@type': 'DefinedRegion', 'addressCountry': 'US'},
                                                  'deliveryTime': {'@type': 'ShippingDeliveryTime', 'handlingTime': {'@type': 'QuantitativeValue', 'minValue': 0, 'maxValue': 0, 'unitCode': 'DAY'},
                                                                   'transitTime': {'@type': 'QuantitativeValue', 'minValue': 0, 'maxValue': 0, 'unitCode': 'DAY'}}}}}
         title = f'{p["name"]} | Editable Canva Template'
         if len(title) > 68:
-            title = p['name'][:66].rsplit(' ', 1)[0]
+            title = short_title(p['name'], 66)
         desc = f'{p["name"]}, {money(p["price"])}. {tc["what"]}'
         desc = desc[:157].rsplit(' ', 1)[0] + '…' if len(desc) > 158 else desc
         page(f'templates/{p["slug"]}/index.html', title, desc, body, schema=[bc, schema, faq_schema(faqs)], og_image=p['img_lg'],
@@ -802,6 +841,7 @@ def journal_pages(articles):
 <div class="hero-img"><img src="{img}" alt="{e(a["title"])}" fetchpriority="high"></div>
 {toc}<div class="prose">{content}</div>
 </div></article>
+{guides_section(guides_for(a['tags'], 3, lang, exclude=a['slug']), 'Sigue leyendo' if es else 'Keep reading', link=not es)}
 {signup_box(es)}
 <section class="sec band"><div class="wrap"><div class="sec-head"><h2>{'Plantillas para tu fiesta' if es else 'Templates for your celebration'}</h2><a class="textlink" href="@/shop/">{'Ver todas' if es else 'See all templates'}</a></div>
 <ul class="grid" style="list-style:none;margin:0;padding:0">{''.join(card(p) for p in more)}</ul></div></section>'''
@@ -939,9 +979,25 @@ def static_files(articles):
     open(os.path.join(OUT, 'CNAME'), 'w').write('digipodstudio.com\n')
     open(os.path.join(OUT, '.nojekyll'), 'w').write('')
     open(os.path.join(OUT, 'robots.txt'), 'w').write(f'User-agent: *\nAllow: /\nDisallow: /party-list/\n\nSitemap: {SITE}/sitemap.xml\n')
+    # lastmod = the day the page's HTML last changed (data/page_dates.json), not the build date. Google ignores
+    # lastmod when every URL says "today" on every build.
+    dates_file = os.path.join(ROOTDIR, 'data', 'page_dates.json')
+    try:
+        dates = json.load(open(dates_file))
+    except (OSError, ValueError):
+        dates = {}
     sm = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for u, pr in SITEMAP:
-        sm.append(f'<url><loc>{u}</loc><lastmod>{TODAY.isoformat()}</lastmod><priority>{pr}</priority></url>')
+        rel = u[len(SITE) + 1:]
+        fp = os.path.join(OUT, rel + 'index.html' if (rel == '' or rel.endswith('/')) else rel)
+        h = hashlib.sha1(open(fp, 'rb').read()).hexdigest()[:16] if os.path.exists(fp) else ''
+        rec = dates.get(u)
+        if not rec or rec.get('hash') != h:
+            rec = dates[u] = {'hash': h, 'date': TODAY.isoformat()}
+        sm.append(f'<url><loc>{u}</loc><lastmod>{rec["date"]}</lastmod><priority>{pr}</priority></url>')
+    if not PREVIEW:
+        live = {u for u, _ in SITEMAP}
+        json.dump({u: dates[u] for u in sorted(dates) if u in live}, open(dates_file, 'w'), indent=0)
     sm.append('</urlset>')
     open(os.path.join(OUT, 'sitemap.xml'), 'w').write('\n'.join(sm))
     # RSS feeds. Each item carries its hero image (enclosure + media:content) so Pinterest auto-publish can pin it.
@@ -971,6 +1027,7 @@ def main():
         shutil.rmtree(OUT)
     os.makedirs(OUT)
     articles = load_articles()
+    ARTS[:] = articles
     assign_article_images(articles)
     home(articles)
     spanish_home(articles)

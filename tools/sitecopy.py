@@ -32,7 +32,7 @@ OCCASION_COPY = {
     'graduation': {
         'h1': 'Graduation templates',
         'title': 'Graduation Party Website Invitation Template | Editable in Canva',
-        'desc': 'A graduation party website invitation you edit in Canva and share as one link.',
+        'desc': 'Graduation party website invitation templates you edit in Canva: party details, directions and RSVP in one link that works on every phone.',
         'intro': 'Share the party details, directions and RSVP in one link that works on every phone.',
         'blurb': 'Website invitations for the class of the year',
     },
