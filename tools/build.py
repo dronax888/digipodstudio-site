@@ -539,11 +539,25 @@ def steps_html(lang='en', light=False):
     return f'<ol class="steps steps4{" steps-light" if light else ""}">{items}</ol>'
 
 
+def review_name(r):
+    name = r['name'] if r['name'].lower() not in ('family', 'etsy buyer') else 'Etsy buyer'
+    return name[:1].upper() + name[1:]
+
+
+def own_reviews_html(p):
+    mine = [r for r in REVIEWS if str(r.get('listing')) == str(p['id'])]
+    if not mine:
+        return ''
+    return (f'<section class="sec"><div class="wrap"><div class="sec-head"><h2>What buyers said about this design</h2>'
+            f'<a class="textlink" href="{ETSY_SHOP}#reviews" rel="noopener">All reviews on Etsy</a></div>'
+            f'<div class="rev-grid" style="display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">'
+            f'{"".join(review_html(r) for r in mine)}</div></div></section>')
+
+
 def review_html(r):
     p = BYID.get(r['listing'])
     on = f' on <a href="@/templates/{p["slug"]}/">{e(p["name"])}</a>' if p else ''
-    name = r['name'] if r['name'].lower() not in ('family', 'etsy buyer') else 'Etsy buyer'
-    name = name[:1].upper() + name[1:]
+    name = review_name(r)
     return (f'<figure class="review"><span class="stars" aria-label="{r["stars"]} out of 5 stars">{"★" * r["stars"]}{"☆" * (5 - r["stars"])}</span>'
             f'<blockquote>{e(r["text"])}</blockquote><figcaption>{e(name)}, {e(r["date"])}{on}</figcaption></figure>')
 
@@ -781,7 +795,7 @@ def product_pages():
 <h2>Questions</h2>{faq_html(faqs)}
 </div></div>
 <div class="sticky-buy"><span><strong>{money(p["price"])}</strong></span><a class="btn btn-primary" href="{p["url"]}" rel="noopener">Buy on Etsy</a></div>
-{look}{rel_html}{guides_section(guides_for([o, p['type']] + p['colours'][:1], 2, stable=True), f'Planning a {p["occasion_short"].lower()}?' if o != 'party-extras' else 'Planning guides')}'''
+{look}{rel_html}{own_reviews_html(p)}{guides_section(guides_for([o, p['type']] + p['colours'][:1], 2, stable=True), f'Planning a {p["occasion_short"].lower()}?' if o != 'party-extras' else 'Planning guides')}'''
         schema = {'@context': 'https://schema.org', '@type': 'Product', 'name': p['name'], 'image': [p['img_lg']], 'sku': p['no'],
                   'description': f'{tc["what"]} {tc["use"]}', 'brand': {'@type': 'Brand', 'name': BRAND},
                   'category': f'{p["occasion_name"]} > {p["type_name"]}',
@@ -793,6 +807,11 @@ def product_pages():
                                                  'shippingDestination': {'@type': 'DefinedRegion', 'addressCountry': 'US'},
                                                  'deliveryTime': {'@type': 'ShippingDeliveryTime', 'handlingTime': {'@type': 'QuantitativeValue', 'minValue': 0, 'maxValue': 0, 'unitCode': 'DAY'},
                                                                   'transitTime': {'@type': 'QuantitativeValue', 'minValue': 0, 'maxValue': 0, 'unitCode': 'DAY'}}}}}
+        mine = [r for r in REVIEWS if str(r.get('listing')) == str(p['id'])]
+        if mine:  # real Etsy reviews of THIS listing, also shown on the page (Google only allows visible reviews)
+            schema['review'] = [{'@type': 'Review', 'author': {'@type': 'Person', 'name': review_name(r)},
+                                 'reviewRating': {'@type': 'Rating', 'ratingValue': r['stars'], 'bestRating': 5},
+                                 'reviewBody': r['text']} for r in mine]
         title = f'{p["name"]} | Editable Canva Template'
         if len(title) > 68:
             title = short_title(p['name'], 66)
@@ -938,7 +957,7 @@ def simple_pages():
 <p>If you sign up for our checklist and emails, we keep your email address, the celebration you chose and the party date (if you gave one) in a private Google Sheet that only Digipod Studio can see. We use it only to send you planning ideas and new designs, at most once a week. To unsubscribe or have your details deleted, reply to any email or write to the address below.</p>
 <p>Your party list is stored only in your own browser on your device. Sharing a list creates a link containing the template numbers you chose and nothing else.</p>
 <p>Product photos load from Etsy's image servers and fonts load from Google Fonts. Those services receive standard technical information such as your IP address when your browser requests them.</p>
-<p>Questions: <a href="mailto:{SHOP["email"]}">{SHOP["email"]}</a>. Last updated {TODAY:%B %-d, %Y}.</p></section>''', schema=[bc], priority='0.2')
+<p>Questions: <a href="mailto:{SHOP["email"]}">{SHOP["email"]}</a>. Last updated November 6, 2026.</p></section>''', schema=[bc], priority='0.2')
 
     page('404.html', 'Page not found | Digipod Studio', 'This page does not exist.',
          '<section class="page-head wrap"><h1>We could not find that page</h1><p class="lede">The link may be old or mistyped. Search for a template or start from the shop.</p>'
