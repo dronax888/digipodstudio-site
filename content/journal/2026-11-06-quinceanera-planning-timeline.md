@@ -1,5 +1,6 @@
 ---
 title: Quinceañera planning timeline: when to send the save the date, invitations and slideshow
+seo_title: Quinceañera Planning Timeline: When to Send Everything
 description: A month-by-month quinceañera timeline, from the first save the date to the slideshow on the night, with the dates worked out for you.
 date: 2026-11-06
 slug: quinceanera-planning-timeline

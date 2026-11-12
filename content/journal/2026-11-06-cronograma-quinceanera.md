@@ -1,5 +1,6 @@
 ---
 title: Cronograma para tu quinceañera: cuándo enviar el save the date, las invitaciones y preparar el video
+seo_title: Cronograma de quinceañera: cuándo enviar cada invitación
 description: Un cronograma mes a mes para organizar los XV años, desde el primer save the date hasta el slideshow de la fiesta.
 date: 2026-11-06
 slug: cronograma-quinceanera

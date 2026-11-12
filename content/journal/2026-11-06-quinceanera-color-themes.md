@@ -1,5 +1,6 @@
 ---
 title: Quinceañera color themes: 12 palettes and how to carry them through every invitation
+seo_title: Quinceañera Color Themes: 12 Palettes for Every Invitation
 description: Twelve quinceañera color palettes, from blush and gold to emerald and champagne, with ideas for the dress, decor and matching invitations.
 date: 2026-11-06
 slug: quinceanera-color-themes

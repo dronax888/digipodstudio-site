@@ -39,7 +39,7 @@ Then commit and push. GitHub Pages republishes in about a minute.
 One article a day from `data/content-calendar.json`. Rules for every article:
 
 1. Written for parents planning the event, plain and practical, 900 to 1,400 words.
-2. Front matter: title (under 65 characters where possible), description (under 158), date, slug, lang, tags (occasion/type/color slugs used to pick products).
+2. Front matter: title (under 65 characters where possible), description (under 158), date, slug, lang, tags (occasion/type/color slugs used to pick products). If the title is longer than 60 characters, also add `seo_title:` (60 characters or less) - it becomes the Google/Bing title while the long title stays as the page heading (Bing flags titles over about 70 characters).
 3. At least two `[[products: <tags> | 3]]` blocks, and 2 or more links to other pages on the site (planner, related articles, collections).
 4. Ends with `## Frequently asked questions` (or `## Preguntas frecuentes`) with 2 to 4 `###` questions. These become FAQ rich results.
 5. No invented statistics, prices or quotes. Never quote song lyrics. Only general, widely accepted advice.

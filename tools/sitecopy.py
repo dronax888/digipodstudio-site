@@ -3,14 +3,14 @@
 OCCASION_COPY = {
     'quinceanera-sweet-16': {
         'h1': 'Quinceañera & sweet 16 templates',
-        'title': 'Quinceañera Invitations, Slideshows & Save the Dates | Editable in Canva',
+        'title': 'Quinceañera Invitations, Slideshows & Save the Dates',
         'desc': 'Editable quinceañera and sweet 16 slideshows, video invitations, save the dates and website invitations with RSVP. Personalize in Canva and share the same day.',
         'intro': 'Everything for her quince, from the first save the date to the slideshow on the night. Pick her colors once and carry them through every piece. Each template opens in Canva, so you change the names, photos, dates and music yourself, in English or Spanish.',
         'blurb': 'Slideshows, video invitations, save the dates and RSVP websites',
     },
     'birthday-baby': {
         'h1': 'Birthday & first birthday templates',
-        'title': 'Birthday Slideshow & First Birthday Invitation Templates | Editable in Canva',
+        'title': 'Birthday Slideshows & First Birthday Invitations',
         'desc': 'First birthday slideshows, ONEderland invitations and birthday photo montages for any age. Edit in Canva and download as video.',
         'intro': 'Slideshows that walk through the first twelve months, invitations for ONEderland parties and photo montages for milestone birthdays at any age.',
         'blurb': 'First-year slideshows and party invitations',

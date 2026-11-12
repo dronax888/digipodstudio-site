@@ -1,5 +1,6 @@
 ---
 title: Digital or printed quinceañera invitations? How to choose, and how to do both
+seo_title: Digital vs Printed Quinceañera Invitations: How to Choose
 description: Video invitations, invitation websites and printed cards compared, with a simple way to combine them so every guest gets the right one.
 date: 2026-11-06
 slug: digital-vs-printed-quinceanera-invitations

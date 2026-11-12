@@ -871,7 +871,7 @@ def journal_pages(articles):
                            'mainEntityOfPage': SITE + '/' + a['path']}]
             if faqs:
                 schema.append(faq_schema(faqs))
-            page(a['path'] + 'index.html', a['title'] + ' | Digipod Studio', a['description'], body, schema=schema, og_image=img, lang=lang,
+            page(a['path'] + 'index.html', a.get('seo_title') or (a['title'] + ' | Digipod Studio'), a['description'], body, schema=schema, og_image=img, lang=lang,
                  alternates=alt, og_type='article', priority='0.7')
 
 
